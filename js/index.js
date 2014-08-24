@@ -1,8 +1,16 @@
 $(function(){
   // Get this later from a form
   var NUM_TILES = 16;
+  var MIN_WORD_LEN = 3;
   drawGrid(NUM_TILES);
   sanitizeKeystrokes();
+  setupGameChangeHandler();
+  $('.modal-footer button.btn-primary').click(function () {
+    MIN_WORD_LEN = $('.minWordLength').val();
+    NUM_TILES = $('.numTiles').val()
+    drawGrid(NUM_TILES);
+    $('.modal-footer button.btn-default').click();
+  });
 });
 
 function sanitizeKeystrokes() {
@@ -23,21 +31,13 @@ function sanitizeKeystrokes() {
       }
     }
     this.value = content;
-    // if (charCode < 65 || charCode > 90) {
-    //   content = this.value;
-    //   firstChar = content.charAt(0);
-    //   if (content.length > 1 && (allowedKeys.indexOf(firstChar) != -1)) {
-    //     this.value = content.charAt(0);
-    //   } else {
-    //     this.value = '';
-    //   }
-    // }
   });
 }
 
 function drawGrid(numTiles) {
   // Render the rows
   var gridContainer = $('.grid');
+  gridContainer.empty();
   var rowTemplate = $('.gridRow.template');
   var tileTemplate = $('.tile.template');
   var tileContainer, rowCopy, tileCopy;
@@ -54,4 +54,12 @@ function drawGrid(numTiles) {
     }
     gridContainer.append(rowCopy);
   }
+}
+
+function setupGameChangeHandler() {
+  $('.modal-footer button.btn-primary').click(function () {
+    var minWordLength = $('.minWordLength option[selected]').val();
+    var boardSize = $('.numTiles option[selected]').val();
+
+  });
 }
