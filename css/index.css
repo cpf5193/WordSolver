@@ -1,4 +1,9 @@
  @import url("reset.css");
+
+body {
+  padding: 8px;
+  background-color: #313174;
+}
 .tile {
   display: inline-block;
 }
@@ -16,5 +21,33 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  margin-top: 100px;
+  margin-top: 20px;
+}
+.modal-dialog {
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+.modal-title {
+  font-size: 24px;
+  text-align: center;
+}
+.modal-body label {
+  display: block;
+}
+button.btn-primary[data-toggle="modal"] {
+  width: 142px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 15px;
+}
+h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+}
+.mainSection {
+  text-align: center;
 }

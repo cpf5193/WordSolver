@@ -1,14 +1,60 @@
 <html>
   <head>
     <title>Word Scramble Solver</title>
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
   </head>
   <body>
     <div class="template tile"></div>
     <div class="template gridRow"></div>
-    <div class="grid"></div>
+    <div class="mainSection">
+      <h1>Enter the grid letters:</h1>
+      <div class="grid"></div>
+
+      <button class="btn btn-primary" data-toggle="modal" data-target="#gridOptions">
+        Modify Game Rules
+      </button>
+    </div>
+    
+
+    <div class="modal fade" id="gridOptions" tabindex="-1" role="dialog" aria-labelledby="gridOptionsLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="gridOptionsLabel">Game Rules</h4>
+          </div>
+          <div class="modal-body">
+            <label>
+              Minimum Word Length:
+              <select class="minWordLength">
+                <option>1</option>
+                <option>2</option>
+                <option selected>3</option>
+                <option>4</option>
+              </select>
+            </label>
+            <label>
+              Board Size:
+              <select class="numTiles">
+                <option>4</option>
+                <option>9</option>
+                <option selected>16</option>
+                <option>25</option>
+                <option>36</option>
+              </select>
+            </label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </body>
-  <script src="lib/jquery-2.1.1.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   <script src="js/index.js" type="text/javascript"></script>
 </html>
