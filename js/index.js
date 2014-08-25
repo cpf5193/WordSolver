@@ -72,7 +72,8 @@ function getMatches(minWordLength, numTiles) {
               gridSize: numTiles},
       dataType: "html",
       success: function(response) {
-        alert(response);
+        var matches = lookupMatches(response, gridVals);
+        showMatches(matches);
       },
       fail: function (jqXHR, textStatus) {
         alert( "Request failed: " + textStatus );
@@ -80,3 +81,40 @@ function getMatches(minWordLength, numTiles) {
     });
   })
 }
+
+// Build the trie using the filtered matches
+function buildTrie(words) {
+  //for each in words, insert
+}
+
+// Use a trie to find all the paths in the grid that match the dictionary
+function lookupMatches(words, gridVals) {
+  var trie = buildTrie(words);
+  //traverse the grid, use trie to match paths
+}
+
+// Render the results in the page
+function showMatches(matches) {
+  //take the matches and render them in a space below the page
+}
+
+
+//TODO:
+/*
+  Add the trie.js and trieNode.js scripts to the html
+  Factor out the grid traversal and matching into another class MatchFinder,
+    where you can put the methods for tile neighbors, recursive pathfinding, etc.
+  Implement buildTrie
+  Implement lookupMatches
+  Implement showMatches
+  Change fonts to sans-serif
+  Limit input so that it only takes valid tiles
+  add header and footer templates
+
+
+  Added features:
+    user dictionaries
+    d3.js paths to show connections between tiles for matches
+    add in tile weights
+    sorting by alphabetical/score
+*/
