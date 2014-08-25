@@ -4,7 +4,7 @@ $(function(){
   var MIN_WORD_LEN = 3;
   drawGrid(NUM_TILES);
   sanitizeKeystrokes();
-  setupGameChangeHandler();
+  getMatches(MIN_WORD_LEN, NUM_TILES);
   $('.modal-footer button.btn-primary').click(function () {
     MIN_WORD_LEN = $('.minWordLength').val();
     NUM_TILES = $('.numTiles').val()
@@ -56,10 +56,27 @@ function drawGrid(numTiles) {
   }
 }
 
-function setupGameChangeHandler() {
-  $('.modal-footer button.btn-primary').click(function () {
-    var minWordLength = $('.minWordLength option[selected]').val();
-    var boardSize = $('.numTiles option[selected]').val();
+function getMatches(minWordLength, numTiles) {
+  $('.gridButtons .btn-success').click(function() {
+    var tiles = $('.tile input[type="text"]');
+    var gridVals = [];
+    tiles.each(function() {
+      gridVals.push($(this).val());
+    });
 
-  });
+    var request = $.ajax({
+      url: "getDictionary.php",
+      type: "POST",
+      data: { minWordLen: minWordLength,
+              letters: gridVals,
+              gridSize: numTiles},
+      dataType: "html",
+      success: function(response) {
+        alert(response);
+      },
+      fail: function (jqXHR, textStatus) {
+        alert( "Request failed: " + textStatus );
+      }
+    });
+  })
 }
