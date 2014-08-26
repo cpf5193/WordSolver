@@ -48,7 +48,7 @@ function drawGrid(numTiles) {
     for(var j = 1; j <= Math.sqrt(numTiles); ++j) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
-      tileCopy.addClass('tile' + j);
+      tileCopy.addClass('tile' + (i * Math.sqrt(numTiles) + j);
       tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');
       rowCopy.append(tileCopy);
     }
@@ -84,12 +84,17 @@ function getMatches(minWordLength, numTiles) {
 
 // Build the trie using the filtered matches
 function buildTrie(words) {
-  //for each in words, insert
+  var trie = new Trie();
+  for(var i=0; i<words.length; ++i) {
+    trie.insert(words[i]);
+  }
+  return trie;
 }
 
 // Use a trie to find all the paths in the grid that match the dictionary
 function lookupMatches(words, gridVals) {
   var trie = buildTrie(words);
+
   //traverse the grid, use trie to match paths
 }
 
@@ -101,7 +106,6 @@ function showMatches(matches) {
 
 //TODO:
 /*
-  Add the trie.js and trieNode.js scripts to the html
   Factor out the grid traversal and matching into another class MatchFinder,
     where you can put the methods for tile neighbors, recursive pathfinding, etc.
   Implement buildTrie
@@ -110,7 +114,7 @@ function showMatches(matches) {
   Change fonts to sans-serif
   Limit input so that it only takes valid tiles
   add header and footer templates
-
+  Add tooltips, instructions
 
   Added features:
     user dictionaries
