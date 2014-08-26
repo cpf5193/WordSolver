@@ -14,3 +14,8 @@ Trie.prototype.insert = function(word) {
 Trie.prototype.lookup = function(word) {
   return this.root.lookup(word);
 };
+
+// Determine whether the given word is a valid word in the trie
+Trie.prototype.isWordInTrie = function(word) {
+  return this.root.isWordInTrie(word);
+}

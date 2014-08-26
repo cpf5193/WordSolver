@@ -106,10 +106,9 @@ function showMatches(matches) {
 
 //TODO:
 /*
-  Factor out the grid traversal and matching into another class MatchFinder,
-    where you can put the methods for tile neighbors, recursive pathfinding, etc.
-  Implement buildTrie
-  Implement lookupMatches
+  Fix lookup and isWordInTrie methods in trieNode: must use trieNodes as well, not just words
+    -Pass the next Node along with the word
+    -search through all children for first character in the word; must be in children to keep traversing
   Implement showMatches
   Change fonts to sans-serif
   Limit input so that it only takes valid tiles

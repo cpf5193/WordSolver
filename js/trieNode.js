@@ -33,6 +33,9 @@ TrieNode.prototype.insert = function(word) {
   }
 };
 
+//LOOKUP METHOD MIGHT BE WRONG; does not traverse into children
+
+
 // Lookup method for TrieNode
 // Returns true if word is in this subtree
 TrieNode.prototype.lookup = function(word) {
@@ -48,3 +51,9 @@ TrieNode.prototype.lookup = function(word) {
     }
   }
 };
+
+// isWord method for TrieNode
+// Returns true if the given word is an existing complete word
+TrieNode.prototype.isWordInTrie = function(word) {
+ //Make this method similar to lookup, but only return true if the node's 'isWord' is true
+}
