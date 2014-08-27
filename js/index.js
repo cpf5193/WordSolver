@@ -48,7 +48,7 @@ function drawGrid(numTiles) {
     for(var j = 1; j <= Math.sqrt(numTiles); ++j) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
-      tileCopy.addClass('tile' + (i * Math.sqrt(numTiles) + j);
+      tileCopy.addClass('tile' + (i * Math.sqrt(numTiles) + j));
       tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');
       rowCopy.append(tileCopy);
     }
@@ -72,7 +72,7 @@ function getMatches(minWordLength, numTiles) {
               gridSize: numTiles},
       dataType: "html",
       success: function(response) {
-        var matches = lookupMatches(response, gridVals);
+        var matches = lookupMatches(JSON.parse(response), gridVals);
         showMatches(matches);
       },
       fail: function (jqXHR, textStatus) {

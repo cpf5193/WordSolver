@@ -28,7 +28,8 @@ TrieNode.prototype.insert = function(word) {
        // new word, add it
       var newChild = new TrieNode(firstChar);
       newChild.insert(word.substring(1, word.length));
-      childNode[firstChar] = newChild;
+      this.children[firstChar] = newChild;
+      //childNode[firstChar] = newChild;
     }
   }
 };
@@ -66,7 +67,7 @@ TrieNode.prototype.lookup = function(prefix) {
 
 // isWord method for TrieNode
 // Returns true if the given word is an existing complete word
-TrieNode.prototype.isWordInTrie = function(word) {
+TrieNode.prototype.isWordInTrie = function(prefix) {
   //Make this method similar to lookup, but only return true if the node's 'isWord' is true
   if (prefix.length === 0) {
     return false;

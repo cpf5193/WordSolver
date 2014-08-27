@@ -18,19 +18,19 @@ MatchFinder.prototype.defineNeighbors = function() {
   var boardWidth = Math.sqrt(this.gridVals.length);
 
   // define neighbors for first row
-  this.setTopRowNeighbors();
+  this.setTopRowNeighbors(boardWidth);
 
   // define neighbors for middle rows
-  this.setMiddleRowsNeighbors();
+  this.setMiddleRowsNeighbors(boardWidth);
 
   // define neighbors for last row
-  this.setLastRowNeighbors();
+  this.setLastRowNeighbors(boardWidth);
 };
 
 // Sets the neighbors of the tiles in the first row
-MatchFinder.prototype.setTopRowNeighbors = function() {
+MatchFinder.prototype.setTopRowNeighbors = function(boardWidth) {
    // upper left corner:
-  this.neighbors[1] = [2, 1+boardWidth, i+boardWidth+1];
+  this.neighbors[1] = [2, 1+boardWidth, 1+boardWidth+1];
   // upper row not on edges:
   for(var i=2; i<boardWidth; ++i) {
     this.neighbors[i] = [i-1, i+boardWidth-1, i+boardWidth, i+boardWidth+1, i+1];
@@ -40,11 +40,11 @@ MatchFinder.prototype.setTopRowNeighbors = function() {
 };
 
 // Sets the neighbors of tiles not in the first or last row
-MatchFinder.prototype.setMiddleRowsNeighbors = function() {
+MatchFinder.prototype.setMiddleRowsNeighbors = function(boardWidth) {
   var leftEdge, centerTile, rightEdge;
   for(var row=2; row<boardWidth; ++row) {
     // left edge:
-    leftEdge = (row-1)*boardWidth+1)
+    leftEdge = (row-1) * boardWidth + 1;
     this.neighbors[leftEdge] = [leftEdge-boardWidth, leftEdge-boardWidth+1, leftEdge+1,
                                 leftEdge+boardWidth+1, leftEdge+boardWidth];
     for(var col=2; col<boardWidth; ++col) {
@@ -63,7 +63,7 @@ MatchFinder.prototype.setMiddleRowsNeighbors = function() {
 };
 
 // Sets the neighbors of tiles in the last row
-MatchFinder.prototype.setLastRowNeighbors = function() {
+MatchFinder.prototype.setLastRowNeighbors = function(boardWidth) {
   var bottomLeft = (boardWidth-1)*boardWidth+1;
   this.neighbors[bottomLeft] = [bottomLeft-boardWidth, bottomLeft-boardWidth+1,
                                 bottomLeft+1];
@@ -78,11 +78,11 @@ MatchFinder.prototype.setLastRowNeighbors = function() {
 // Sets all the matches found based on the grid values and trie
 MatchFinder.prototype.searchTiles = function() {
   var prefix = '', letter, usedTiles = [];
-  for(var tileNum = 1; tileNum <= this.gridVals.length; ++i) {
-    letter = gridVals[tileNum-1];
+  for(var tileNum = 1; tileNum <= this.gridVals.length; ++tileNum) {
+    letter = this.gridVals[tileNum-1];
     usedTiles.push(tileNum);
     // Because of the preprocessing, the first letter is guaranteed to be in the trie
-    searchForWords(letter, tileNum, usedTiles);
+    this.searchForWords(letter, tileNum, usedTiles);
   }
 };
 
