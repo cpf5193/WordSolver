@@ -77,12 +77,11 @@ MatchFinder.prototype.setLastRowNeighbors = function(boardWidth) {
 
 // Sets all the matches found based on the grid values and trie
 MatchFinder.prototype.searchTiles = function() {
-  var prefix = '', letter, usedTiles = [];
+  var prefix = '', letter;
   for(var tileNum = 1; tileNum <= this.gridVals.length; ++tileNum) {
     letter = this.gridVals[tileNum-1];
-    usedTiles.push(tileNum);
     // Because of the preprocessing, the first letter is guaranteed to be in the trie
-    this.searchForWords(letter, tileNum, usedTiles);
+    this.searchForWords(letter, tileNum, [tileNum]);
   }
 };
 
@@ -111,12 +110,16 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
       }
     );
     var nextPrefix, neighborTileNum, newUsedTiles;
-    for(var i=1; i<=availableNeighbors; ++i) {
-      neighborTileNum = availableNeighbors[i];
+    for(var i=1; i<=availableNeighbors.length; ++i) {
+      neighborTileNum = availableNeighbors[i-1];
       nextPrefix = prefix + this.gridVals[neighborTileNum-1];
+      if (nextPrefix === "puts") {
+        console.log('hi');
+      }
       newUsedTiles = usedTiles;
       newUsedTiles.push(neighborTileNum);
       this.searchForWords(nextPrefix, neighborTileNum, newUsedTiles);
+      newUsedTiles.pop();
     }
   }
   // else the prefix does not exist in the trie, stop recursing

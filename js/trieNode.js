@@ -29,7 +29,6 @@ TrieNode.prototype.insert = function(word) {
       var newChild = new TrieNode(firstChar);
       newChild.insert(word.substring(1, word.length));
       this.children[firstChar] = newChild;
-      //childNode[firstChar] = newChild;
     }
   }
 };
@@ -45,7 +44,7 @@ TrieNode.prototype.lookup = function(prefix) {
     var letter = prefix.charAt(0);
     if (letter in this.children) {
       var nextChild = this.children[letter];
-      nextChild.lookup(prefix.substring(1, prefix.length));
+      return nextChild.lookup(prefix.substring(1, prefix.length));
     }
   }
 };
@@ -79,7 +78,7 @@ TrieNode.prototype.isWordInTrie = function(prefix) {
     var letter = prefix.charAt(0);
     if (letter in this.children) {
       var nextChild = this.children[letter];
-      nextChild.lookup(prefix.substring(1, prefix.length));
+      return nextChild.lookup(prefix.substring(1, prefix.length));
     }
   }
 }
