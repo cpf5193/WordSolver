@@ -6,11 +6,12 @@
   neighbors: the dictionary representing the neighbor tiles for each tile position
   matches: the list of matching words
 */
-function MatchFinder(trie, gridVals) {
+function MatchFinder(trie, gridVals, minWordSize) {
   this.trie = trie;
   this.gridVals = gridVals;
   this.neighbors = {};
   this.matches = [];
+  this.minWordSize = minWordSize;
 }
 
 // Constructs a dictionary that maps the tile positions to the positions of their neighbors
@@ -96,8 +97,10 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   var isMatch = this.trie.lookup(prefix);
   if (isMatch) {
     // This prefix is present in the trie
-
-    if (this.trie.isWordInTrie(prefix)) {
+    if (this.trie.isWordInTrie(prefix) && prefix === "yur") {
+      console.log('why');
+    }
+    if (prefix.length >= this.minWordSize  && this.trie.isWordInTrie(prefix)) {
     // This match is a full word
       this.matches.push(prefix);
     }
@@ -113,9 +116,6 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
     for(var i=1; i<=availableNeighbors.length; ++i) {
       neighborTileNum = availableNeighbors[i-1];
       nextPrefix = prefix + this.gridVals[neighborTileNum-1];
-      if (nextPrefix === "puts") {
-        console.log('hi');
-      }
       newUsedTiles = usedTiles;
       newUsedTiles.push(neighborTileNum);
       this.searchForWords(nextPrefix, neighborTileNum, newUsedTiles);

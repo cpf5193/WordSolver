@@ -78,7 +78,7 @@ TrieNode.prototype.isWordInTrie = function(prefix) {
     var letter = prefix.charAt(0);
     if (letter in this.children) {
       var nextChild = this.children[letter];
-      return nextChild.lookup(prefix.substring(1, prefix.length));
+      return nextChild.isWordInTrie(prefix.substring(1, prefix.length));
     }
   }
 }

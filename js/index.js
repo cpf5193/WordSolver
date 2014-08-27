@@ -72,7 +72,7 @@ function getMatches(minWordLength, numTiles) {
               gridSize: numTiles},
       dataType: "html",
       success: function(response) {
-        var matches = lookupMatches(JSON.parse(response), gridVals);
+        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength);
         showMatches(matches);
       },
       fail: function (jqXHR, textStatus) {
@@ -92,9 +92,9 @@ function buildTrie(words) {
 }
 
 // Use a trie to find all the paths in the grid that match the dictionary
-function lookupMatches(words, gridVals) {
+function lookupMatches(words, gridVals, minWordLength) {
   var trie = buildTrie(words);
-  var finder = new MatchFinder(trie, gridVals);
+  var finder = new MatchFinder(trie, gridVals, minWordLength);
   finder.defineNeighbors();
   finder.searchTiles();
   this.showMatches(finder.matches);
