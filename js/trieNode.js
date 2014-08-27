@@ -33,27 +33,52 @@ TrieNode.prototype.insert = function(word) {
   }
 };
 
-//LOOKUP METHOD MIGHT BE WRONG; does not traverse into children
-
-
 // Lookup method for TrieNode
 // Returns true if word is in this subtree
-TrieNode.prototype.lookup = function(word) {
-  if (word.length === 0 || (this.value !== word.charAt(0))) {
-    // this prefix is not in the tree
+TrieNode.prototype.lookup = function(prefix) {
+  if (prefix.length === 0) {
     return false;
+  } else if (prefix.length === 1) {
+    return (prefix.charAt(0) in this.children);
   } else {
-    // The first character of 'word' must match this node's value
-    if (word.length === 1) {
-      return true;
-    } else {
-      return this.lookup(word.substring(1, word.length));
+    var letter = prefix.charAt(0);
+    if (letter in this.children) {
+      var nextChild = this.children[letter];
+      nextChild.lookup(prefix.substring(1, prefix.length));
     }
   }
 };
 
+
+// TrieNode.prototype.lookup = function(word) {
+//   if (word.length === 0 || (this.value !== word.charAt(0))) {
+//     // this prefix is not in the tree
+//     return false;
+//   } else {
+//     // The first character of 'word' must match this node's value
+//     if (word.length === 1) {
+//       return true;
+//     } else {
+//       return this.lookup(word.substring(1, word.length));
+//     }
+//   }
+// };
+
 // isWord method for TrieNode
 // Returns true if the given word is an existing complete word
 TrieNode.prototype.isWordInTrie = function(word) {
- //Make this method similar to lookup, but only return true if the node's 'isWord' is true
+  //Make this method similar to lookup, but only return true if the node's 'isWord' is true
+  if (prefix.length === 0) {
+    return false;
+  } else if (prefix.length === 1) {
+    var letter = prefix.charAt(0);
+    var nextChild = this.children[letter];
+    return (letter in this.children) && nextChild.isWord;
+  } else {
+    var letter = prefix.charAt(0);
+    if (letter in this.children) {
+      var nextChild = this.children[letter];
+      nextChild.lookup(prefix.substring(1, prefix.length));
+    }
+  }
 }

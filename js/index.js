@@ -94,13 +94,16 @@ function buildTrie(words) {
 // Use a trie to find all the paths in the grid that match the dictionary
 function lookupMatches(words, gridVals) {
   var trie = buildTrie(words);
-
-  //traverse the grid, use trie to match paths
+  var finder = new MatchFinder(trie, gridVals);
+  finder.defineNeighbors();
+  finder.searchTiles();
+  this.showMatches(finder.matches);
 }
 
 // Render the results in the page
 function showMatches(matches) {
   //take the matches and render them in a space below the page
+  alert(matches);
 }
 
 
