@@ -1,4 +1,3 @@
-
 /* 
   Constructor for a MatchFinder object
   trie: the trie in which to search for matches
@@ -97,9 +96,6 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   var isMatch = this.trie.lookup(prefix);
   if (isMatch) {
     // This prefix is present in the trie
-    if (this.trie.isWordInTrie(prefix) && prefix === "yur") {
-      console.log('why');
-    }
     if (prefix.length >= this.minWordSize  && this.trie.isWordInTrie(prefix)) {
     // This match is a full word
       this.matches.push(prefix);

@@ -49,21 +49,6 @@ TrieNode.prototype.lookup = function(prefix) {
   }
 };
 
-
-// TrieNode.prototype.lookup = function(word) {
-//   if (word.length === 0 || (this.value !== word.charAt(0))) {
-//     // this prefix is not in the tree
-//     return false;
-//   } else {
-//     // The first character of 'word' must match this node's value
-//     if (word.length === 1) {
-//       return true;
-//     } else {
-//       return this.lookup(word.substring(1, word.length));
-//     }
-//   }
-// };
-
 // isWord method for TrieNode
 // Returns true if the given word is an existing complete word
 TrieNode.prototype.isWordInTrie = function(prefix) {

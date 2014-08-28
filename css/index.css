@@ -3,6 +3,10 @@
 body {
   padding: 8px;
   background-color: #313174;
+  font-family: sans-serif;
+}
+h2 {
+  font-size: 20px;
 }
 .tile {
   display: inline-block;
@@ -37,7 +41,7 @@ body {
   display: block;
 }
 .gridButtons button.btn {
-  width: 142px;
+  width: 150px;
   margin-left: auto;
   margin-right: auto;
   margin-top: 15px;
@@ -52,4 +56,26 @@ h1 {
 }
 .gridButtons{
   display: inline-block;
+}
+.results {
+  color: #fff;
+  margin-top: 20px;
+}
+.result {
+  font-size: 18px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+  -webkit-column-width: 150px; /* Chrome, Safari, Opera */
+  -moz-column-width: 150px; /* Firefox */
+  column-width: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1000px;
+}
+h2.numResults {
+margin-bottom: 10px;
 }

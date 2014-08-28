@@ -8,6 +8,8 @@ $(function(){
   $('.modal-footer button.btn-primary').click(function () {
     MIN_WORD_LEN = $('.minWordLength').val();
     NUM_TILES = $('.numTiles').val()
+    $('.results ol').empty();
+    $('.numResults').empty();
     drawGrid(NUM_TILES);
     $('.modal-footer button.btn-default').click();
   });
@@ -73,7 +75,6 @@ function getMatches(minWordLength, numTiles) {
       dataType: "html",
       success: function(response) {
         var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength);
-        showMatches(matches);
       },
       fail: function (jqXHR, textStatus) {
         alert( "Request failed: " + textStatus );
@@ -102,25 +103,45 @@ function lookupMatches(words, gridVals, minWordLength) {
 
 // Render the results in the page
 function showMatches(matches) {
+  if (matches.length === 0) {
+    $('.numResults').html("No matches found");
+  } else if (matches.length === 1) {
+    $('.numResults').html("1 result found:");
+  } else {
+    $('.numResults').html(matches.length + " results found:");
+  }
+  
+  var matchContainer = $('.results ol');
+  matchContainer.empty();
+  var matchTemplate = $('.result.template');
+  var match;
   //take the matches and render them in a space below the page
-  alert(matches);
+  for(var i=0; i<matches.length; ++i) {
+    match = matchTemplate.clone();
+    match.removeClass('template');
+    match.html(matches[i]);
+    matchContainer.append(match);
+  }
 }
 
 
 //TODO:
 /*
-  Fix lookup and isWordInTrie methods in trieNode: must use trieNodes as well, not just words
-    -Pass the next Node along with the word
-    -search through all children for first character in the word; must be in children to keep traversing
+  Make grid tiles compatible with 'Qu' tile
+  disable the findWords button until all of the fields are filled out/
+    show error tooltip on boxes if not filled out on submit
   Implement showMatches
   Change fonts to sans-serif
   Limit input so that it only takes valid tiles
   add header and footer templates
   Add tooltips, instructions
-
+  filter dictionary to match zynga's (separate dictionary)
+ 
   Added features:
     user dictionaries
     d3.js paths to show connections between tiles for matches
     add in tile weights
     sorting by alphabetical/score
+    loading spinner
+    add 'report mismatches' button
 */
