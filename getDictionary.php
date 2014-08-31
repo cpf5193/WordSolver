@@ -10,7 +10,7 @@ function getDictionary() {
 function filterWords() {
   global $filteredWords;
   $filteredWords = array();
-  $allowedLetters = $_POST["letters"];
+  $allowedLetters = splitQu($_POST["letters"]);
   $minLength = $_POST["minWordLen"];
   $dictionary = getDictionary();
   $index;
@@ -32,6 +32,19 @@ function filterWords() {
     }
   }
   echo json_encode($filteredWords);
+}
+
+function splitQu($letterList) {
+  $splitWords = array();
+  foreach ($letterList as $tileContent) {
+    if (strtolower($tileContent) == "qu") {
+      array_push($splitWords, "q");
+      array_push($splitWords, "u");
+    } else {
+      array_push($splitWords, $tileContent);
+    }
+  }
+  return $splitWords;
 }
 
 filterWords();

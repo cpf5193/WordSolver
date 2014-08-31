@@ -1,16 +1,19 @@
 $(function(){
   // Get this later from a form
-  var NUM_TILES = 16;
-  var MIN_WORD_LEN = 3;
-  drawGrid(NUM_TILES);
+  var NUM_TILES = parseInt($('.numTiles').val());
+  var MIN_WORD_LEN = parseInt($('.minWordLength').val());
+  var Q_TYPE = $('.qType').val();
+  drawGrid(NUM_TILES, Q_TYPE);
   sanitizeKeystrokes();
   getMatches(MIN_WORD_LEN, NUM_TILES);
   $('.modal-footer button.btn-primary').click(function () {
     MIN_WORD_LEN = $('.minWordLength').val();
-    NUM_TILES = $('.numTiles').val()
+    NUM_TILES = $('.numTiles').val();
+    Q_TYPE = $('.qType').val();
     $('.results ol').empty();
     $('.numResults').empty();
-    drawGrid(NUM_TILES);
+    drawGrid(NUM_TILES, Q_TYPE);
+    sanitizeKeystrokes();
     $('.modal-footer button.btn-default').click();
   });
 });
@@ -36,7 +39,7 @@ function sanitizeKeystrokes() {
   });
 }
 
-function drawGrid(numTiles) {
+function drawGrid(numTiles, qType) {
   // Render the rows
   var gridContainer = $('.grid');
   gridContainer.empty();
@@ -51,7 +54,11 @@ function drawGrid(numTiles) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
       tileCopy.addClass('tile' + (i * Math.sqrt(numTiles) + j));
-      tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');
+      if (qType === 'Q') {
+        tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');        
+      } else {
+        tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');        
+      }
       rowCopy.append(tileCopy);
     }
     gridContainer.append(rowCopy);
@@ -110,16 +117,22 @@ function showMatches(matches) {
   } else {
     $('.numResults').html(matches.length + " results found:");
   }
-  
+  matches.sort(function(a, b){
+    return b.length - a.length; // ASC -> a - b; DESC -> b - a
+  });
+  var uniqueMatches = [];
+  $.each(matches, function(index, match){
+    if($.inArray(match, uniqueMatches) === -1) uniqueMatches.push(match);
+  });
   var matchContainer = $('.results ol');
   matchContainer.empty();
   var matchTemplate = $('.result.template');
   var match;
   //take the matches and render them in a space below the page
-  for(var i=0; i<matches.length; ++i) {
+  for(var i=0; i<uniqueMatches.length; ++i) {
     match = matchTemplate.clone();
     match.removeClass('template');
-    match.html(matches[i]);
+    match.html(uniqueMatches[i]);
     matchContainer.append(match);
   }
 }
@@ -127,11 +140,9 @@ function showMatches(matches) {
 
 //TODO:
 /*
-  Make grid tiles compatible with 'Qu' tile
+  Make grid tiles compatible with 'Qu' tile: insert as game rule option
   disable the findWords button until all of the fields are filled out/
     show error tooltip on boxes if not filled out on submit
-  Implement showMatches
-  Change fonts to sans-serif
   Limit input so that it only takes valid tiles
   add header and footer templates
   Add tooltips, instructions
