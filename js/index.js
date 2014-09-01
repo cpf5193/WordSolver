@@ -5,6 +5,7 @@ $(function(){
   var Q_TYPE = $('.qType').val();
   drawGrid(NUM_TILES, Q_TYPE);
   sanitizeKeystrokes();
+  automaticMoveFields(NUM_TILES);
   getMatches(MIN_WORD_LEN, NUM_TILES);
   $('.modal-footer button.btn-primary').click(function () {
     MIN_WORD_LEN = $('.minWordLength').val();
@@ -15,6 +16,7 @@ $(function(){
     drawGrid(NUM_TILES, Q_TYPE);
     sanitizeKeystrokes();
     $('.modal-footer button.btn-default').click();
+    automaticMoveFields(NUM_TILES);
   });
 });
 
@@ -39,6 +41,19 @@ function sanitizeKeystrokes() {
   });
 }
 
+function automaticMoveFields(numTiles) {
+  $('.tile1 input').attr('autofocus', 'autofocus');
+  var sizeLimit = $('.qType').val().length;
+  var lastTile = $('.tile' + numTiles);
+  $('.tile').not(lastTile).not('.tile.template').find('input[type="text"]')
+    .on('keyup paste', function() {
+      if(this.value.length === this.maxLength) {
+        var nextIndex = parseInt(this.parentNode.classList[1].substring(4)) + 1;
+        $('.tile' + nextIndex + " input").focus();
+      }
+  });
+}
+
 function drawGrid(numTiles, qType) {
   // Render the rows
   var gridContainer = $('.grid');
@@ -53,7 +68,7 @@ function drawGrid(numTiles, qType) {
     for(var j = 1; j <= Math.sqrt(numTiles); ++j) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
-      tileCopy.addClass('tile' + (i * Math.sqrt(numTiles) + j));
+      tileCopy.addClass('tile' + ((i-1) * Math.sqrt(numTiles) + j));
       if (qType === 'Q') {
         tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');        
       } else {
