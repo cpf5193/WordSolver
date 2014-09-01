@@ -18,6 +18,11 @@ $(function(){
     $('.modal-footer button.btn-default').click();
     automaticMoveFields(NUM_TILES);
   });
+  $('.gridButtons .btn-danger').click(function () {
+    $('.tile').not($('.template')).find('input').val("");
+        $('.results ol').empty();
+    $('.numResults').empty();
+  })
 });
 
 function sanitizeKeystrokes() {
