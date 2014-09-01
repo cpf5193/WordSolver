@@ -1,29 +1,31 @@
 $(function(){
-  // Get this later from a form
-  var NUM_TILES = parseInt($('.numTiles').val());
-  var MIN_WORD_LEN = parseInt($('.minWordLength').val());
-  var Q_TYPE = $('.qType').val();
+  setupBoard();
+
+  // Change game rules
+  $('.modal-footer button.btn-primary').click(function () {
+    setupBoard();
+    $('.modal-footer button.btn-default').click();
+  });
+
+  // Clear board
+  $('.gridButtons .btn-danger').click(function () {
+    $('.tile').not($('.template')).find('input').val("");
+    $('.results ol').empty();
+    $('.numResults').empty();
+  });
+});
+
+function setupBoard() {
+  MIN_WORD_LEN = parseInt($('.minWordLength').val());
+  NUM_TILES = parseInt($('.numTiles').val());
+  Q_TYPE = $('.qType').val();
+  $('.results ol').empty();
+  $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
   sanitizeKeystrokes();
   automaticMoveFields(NUM_TILES);
   getMatches(MIN_WORD_LEN, NUM_TILES);
-  $('.modal-footer button.btn-primary').click(function () {
-    MIN_WORD_LEN = $('.minWordLength').val();
-    NUM_TILES = $('.numTiles').val();
-    Q_TYPE = $('.qType').val();
-    $('.results ol').empty();
-    $('.numResults').empty();
-    drawGrid(NUM_TILES, Q_TYPE);
-    sanitizeKeystrokes();
-    $('.modal-footer button.btn-default').click();
-    automaticMoveFields(NUM_TILES);
-  });
-  $('.gridButtons .btn-danger').click(function () {
-    $('.tile').not($('.template')).find('input').val("");
-        $('.results ol').empty();
-    $('.numResults').empty();
-  })
-});
+}
 
 function sanitizeKeystrokes() {
   var allowedKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
