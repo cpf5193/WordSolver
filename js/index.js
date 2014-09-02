@@ -1,64 +1,153 @@
+ALPHABET_Q = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
+     'h', 'i', 'j', 'k', 'l', 'm', 'n',
+     'p', 'q', 'r', 's', 't', 'u', 'v',
+     'w', 'x', 'y', 'z'];
+ALPHABET_QU = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
+     'h', 'i', 'j', 'k', 'l', 'm', 'n',
+     'p', 'qu', 'r', 's', 't', 'u', 'v',
+     'w', 'x', 'y', 'z'];
 $(function(){
-  setupBoard();
+  getGameOptions();
 
   // Change game rules
   $('.modal-footer button.btn-primary').click(function () {
-    setupBoard();
+    setGameOptions();
     $('.modal-footer button.btn-default').click();
   });
 
   // Clear board
   $('.gridButtons .btn-danger').click(function () {
-    $('.tile').not($('.template')).find('input').val("");
-    $('.results ol').empty();
-    $('.numResults').empty();
+    clearBoard();
   });
 });
 
-function setupBoard() {
-  MIN_WORD_LEN = parseInt($('.minWordLength').val());
-  NUM_TILES = parseInt($('.numTiles').val());
-  Q_TYPE = $('.qType').val();
+function clearBoard() {
+  $('.tile').not($('.template')).find('input').val("");
+  $('.results ol').empty();
+  $('.numResults').empty();
+}
+
+function setModalDisplay(options) {
+  $('.minWordLength option:nth-child(' + parseInt(options.minWordLen) +
+    ')').attr('selected', 'selected');
+  $('.numTiles option:nth-child(' + (Math.sqrt(parseInt(options.boardSize)) - 1) +
+    ')').attr('selected', 'selected');
+  if (options.qType === 'Q') {
+    $('.qType option:nth-child(1)').attr('selected', 'selected');
+  } else {
+    $('.qType option:nth-child(2)').attr('selected', 'selected');
+  }
+  var template = $('.template.tileWeightBox');
+  var container = $('.tileWeightContainer');
+  container.empty();
+  var alphabet = options.qType === 'Q' ? ALPHABET_Q : ALPHABET_QU;
+  var copy, letter;
+  for(var i=0; i<alphabet.length; ++i) {
+    letter = alphabet[i];
+    copy = template.clone();
+    copy.find('select').before(letter + ": ");
+    copy.find('option:nth-child(' + options.tileWeights[letter] + ')')
+        .attr('selected', 'selected');
+    copy.removeClass('template');
+    container.append(copy);
+  }
+}
+
+function setupBoard(options) {
+  MIN_WORD_LEN = options.minWordLength;
+  NUM_TILES = options.boardSize;
+  Q_TYPE = options.qType;
+  TILE_WEIGHTS = options.tileWeights;
   $('.results ol').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
-  sanitizeKeystrokes();
-  automaticMoveFields(NUM_TILES);
+  enforceInputRules(Q_TYPE, NUM_TILES);
+  setModalDisplay(options);
   getMatches(MIN_WORD_LEN, NUM_TILES);
 }
 
-function sanitizeKeystrokes() {
-  var allowedKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-                     'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                     's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
-                     'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                     'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
-                     'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];  
-  $('.tile input').keyup(function(e) {
-    var charCode = e.keyCode;
-    var content = this.value, currentChar;
-    for(var i=0; i<content.length; ++i) {
-      currentChar = content.charAt(i);
-      if (allowedKeys.indexOf(currentChar) === -1) {
-        content = content.slice(0, i) + content.slice(i+1, content.length);
-        --i;
+function setGameOptions() {
+  var numTiles = parseInt($('.numTiles').val());
+  var minWordLength = parseInt($('.minWordLength').val());
+  var qType = $('.qType').val();
+  var tileWeights = {};
+  $('.tileWeightBox').not('.template').find('select')
+    .each(function(index, elt) {
+      if (qType === 'Q') {
+        tileWeights[ALPHABET_Q[index]] = $(elt).val();
+      } else {
+        tileWeights[ALPHABET_QU[index]] = $(elt).val();
       }
+    });
+  var request = $.ajax({
+    url: "setOptions.php",
+    type: "POST",
+    data: { "minWordLen" : minWordLength,
+            "maxWordLen" : (qType === 'Q' ? numTiles : numTiles + 1),
+            "boardSize" : numTiles,
+            "qType" : qType,
+            "tileWeights" : tileWeights},
+    dataType: "json",
+    success: function(response) {
+      setupBoard(response);
+    },
+    fail: function (jqXHR, textStatus) {
+      alert( "Request failed: " + textStatus );
+    },
+    error: function( jqXHR, textStatus, errorThrown) {
+      alert("Request error: " + textStatus + ": " + errorThrown);
     }
-    this.value = content;
   });
 }
 
-function automaticMoveFields(numTiles) {
-  $('.tile1 input').attr('autofocus', 'autofocus');
-  var sizeLimit = $('.qType').val().length;
-  var lastTile = $('.tile' + numTiles);
-  $('.tile').not(lastTile).not('.tile.template').find('input[type="text"]')
-    .on('keyup paste', function() {
-      if(this.value.length === this.maxLength) {
-        var nextIndex = parseInt(this.parentNode.classList[1].substring(4)) + 1;
-        $('.tile' + nextIndex + " input").focus();
-      }
+function getGameOptions() {
+  var request = $.ajax({
+    url : "getOptions.php",
+    type : "GET",
+    dataType: "json",
+    success : function(response) {
+      setupBoard(JSON.parse(response));
+    },
+    fail: function (jqXHR, textStatus) {
+      alert( "Request failed: " + textStatus );
+    }
   });
+}
+
+function enforceInputRules(qType, numTiles) {
+  var lastTile = $('.tile' + numTiles);
+  var allButLast = $('.tile').not(lastTile).not('.tile.template')
+                             .find('input[type="text"]');
+  allButLast.keyup(function(event) {
+    var content = this.value;
+    if (qType === 'Q') {
+      if (isLegalKey(content)) {
+        moveFocusToNextTile(this);
+      } else {
+        this.value = '';
+      }
+    } else {
+      if (content === 'q') {
+        $(this).attr('maxlength', 2);
+      } else if (content === 'qu' || isLegalKey(content)) {
+        moveFocusToNextTile(this);
+      } else if (content.charAt(0) === 'q' && content.charAt(1) !== 'u') {
+        this.value = content.charAt(0);
+      } else {
+        this.value = '';
+        $(this).attr('maxlength', '1');
+      }
+    }
+  });
+}
+
+function moveFocusToNextTile(current) {
+  var nextIndex = parseInt(current.parentNode.classList[1].substring(4)) + 1;
+  $('.tile' + nextIndex + " input").focus();
+}
+
+function isLegalKey(key) {
+  return key.match(/^[a-z]$/i) !== null;
 }
 
 function drawGrid(numTiles, qType) {
@@ -76,11 +165,12 @@ function drawGrid(numTiles, qType) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
       tileCopy.addClass('tile' + ((i-1) * Math.sqrt(numTiles) + j));
-      if (qType === 'Q') {
-        tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');        
-      } else {
-        tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');        
-      }
+      tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');
+      // if (qType === 'Q') {
+      //   tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');        
+      // } else {
+      //   tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');        
+      // }
       rowCopy.append(tileCopy);
     }
     gridContainer.append(rowCopy);
@@ -90,7 +180,7 @@ function drawGrid(numTiles, qType) {
 function getMatches(minWordLength, numTiles) {
   $('.gridButtons .btn-success').click(function() {
     var tiles = $('.tile input[type="text"]');
-    var gridVals = [];
+    var gridVals = {};
     tiles.each(function() {
       gridVals.push($(this).val());
     });
