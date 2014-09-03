@@ -129,7 +129,7 @@ MatchFinder.prototype.getScore = function(word) {
   for(var i=0; i<word.length; ++i) {
     letter = word.charAt(i);
     if (letter === 'q' && this.qType === 'Qu') {
-      letter = word.substring(0, 2);
+      letter = word.substring(i, i + 2);
       ++i;
     }
     // switch(this.specialTiles[letter]) {

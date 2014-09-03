@@ -23,7 +23,7 @@ $(function(){
 
 function clearBoard() {
   $('.tile').not($('.template')).find('input').val("");
-  $('.results ol').empty();
+  $('.results ul').empty();
   $('.numResults').empty();
 }
 
@@ -59,7 +59,7 @@ function setupBoard(options) {
   Q_TYPE = options.qType;
   TILE_WEIGHTS = options.tileWeights;
   // SPECIAL_TILES = options.specialTiles;
-  $('.results ol').empty();
+  $('.results ul').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
   enforceInputRules(Q_TYPE, NUM_TILES);
@@ -221,7 +221,26 @@ function showMatches(matches) {
   } else {
     $('.numResults').html(matches.length + " results found:");
   }
-  matches.sort(function(a, b){
+  
+  // Get rid of duplicates
+  var noDups = {}, word;
+  $.each(matches, function(index, obj) {
+    word = obj.word, score = obj.score;
+    if (noDups[word]) {
+      noDups[word] = Math.max(noDups[word], obj.score);
+    } else {
+      noDups[word] = score;
+    }
+  });
+
+  // Convert associative array to array of objects
+  var uniqueMatches = [];
+  $.each(noDups, function(word, score) {
+    uniqueMatches.push({'word':word, 'score':score});
+  })
+
+  // Sort the matches
+  uniqueMatches.sort(function(a, b){
     var scorediff = b.score - a.score;
     if (scorediff !== 0) {
       return scorediff;
@@ -233,17 +252,12 @@ function showMatches(matches) {
       return ((a.word < b.word) ? -1 : (a.word > b.word) ? 1 : 0);
     }
   });
-  var uniqueMatches = [];
-  $.each(matches, function(index, obj){
-    if($.inArray(obj, uniqueMatches) === -1) {
-      uniqueMatches.push(obj);
-    }
-  });
+ 
+  // display the matches
   var matchContainer = $('.results ul');
   matchContainer.empty();
   var matchTemplate = $('.result.template');
   var match;
-  //take the matches and render them in a space below the page
   $.each(uniqueMatches, function(index, obj) {
     match = matchTemplate.clone();
     match.removeClass('template');
