@@ -79,39 +79,33 @@ function setGameOptions() {
         tileWeights[ALPHABET_QU[index]] = $(elt).val();
       }
     });
-  var request = $.ajax({
-    url: "setOptions.php",
-    type: "POST",
-    data: { "minWordLen" : minWordLength,
-            "maxWordLen" : (qType === 'Q' ? numTiles : numTiles + 1),
-            "boardSize" : numTiles,
-            "qType" : qType,
-            "tileWeights" : tileWeights},
-    dataType: "json",
-    success: function(response) {
-      setupBoard(response);
-    },
-    fail: function (jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
-    },
-    error: function( jqXHR, textStatus, errorThrown) {
-      alert("Request error: " + textStatus + ": " + errorThrown);
-    }
-  });
+  var jsonObj = { "minWordLen" : minWordLength,
+                  "maxWordLen" : (qType === 'Q' ? numTiles : numTiles + 1),
+                  "boardSize" : numTiles,
+                  "qType" : qType,
+                  "tileWeights" : tileWeights};
+  localStorage.setItem('gameOptions', JSON.stringify(jsonObj));
+  setupBoard(jsonObj);
 }
 
 function getGameOptions() {
-  var request = $.ajax({
-    url : "getOptions.php",
-    type : "GET",
-    dataType: "json",
-    success : function(response) {
-      setupBoard(JSON.parse(response));
-    },
-    fail: function (jqXHR, textStatus) {
-      alert( "Request failed: " + textStatus );
-    }
-  });
+  
+  var storedOptions = localStorage.getItem('gameOptions');
+  if (storedOptions) {
+    setupBoard(JSON.parse(storedOptions));
+  } else {
+    var request = $.ajax({
+      url : "getOptions.php",
+      type : "GET",
+      dataType: "json",
+      success : function(response) {
+        setupBoard(JSON.parse(response));
+      },
+      fail: function (jqXHR, textStatus) {
+        alert( "Request failed: " + textStatus );
+      }
+    });
+  }
 }
 
 function enforceInputRules(qType, numTiles) {
@@ -166,11 +160,6 @@ function drawGrid(numTiles, qType) {
       tileCopy.removeClass('template');
       tileCopy.addClass('tile' + ((i-1) * Math.sqrt(numTiles) + j));
       tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');
-      // if (qType === 'Q') {
-      //   tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');        
-      // } else {
-      //   tileCopy.html('<input type="text" size="2" maxlength="2" align="middle"></div>');        
-      // }
       rowCopy.append(tileCopy);
     }
     gridContainer.append(rowCopy);
