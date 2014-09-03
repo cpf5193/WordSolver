@@ -5,12 +5,15 @@
   neighbors: the dictionary representing the neighbor tiles for each tile position
   matches: the list of matching words
 */
-function MatchFinder(trie, gridVals, minWordSize) {
+function MatchFinder(trie, gridVals, minWordSize, tileWeights, qType, specialTiles) {
   this.trie = trie;
   this.gridVals = gridVals;
   this.neighbors = {};
+  this.tileWeights = tileWeights;
+  this.specialTiles = specialTiles;
   this.matches = [];
   this.minWordSize = minWordSize;
+  this.qType = qType;
 }
 
 // Constructs a dictionary that maps the tile positions to the positions of their neighbors
@@ -98,7 +101,7 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
     // This prefix is present in the trie
     if (prefix.length >= this.minWordSize  && this.trie.isWordInTrie(prefix)) {
     // This match is a full word
-      this.matches.push(prefix);
+      this.matches.push({'word' : prefix, 'score' : this.getScore(prefix)});
     }
 
     // Search with each of the tile's neighbors
@@ -119,4 +122,36 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
     }
   }
   // else the prefix does not exist in the trie, stop recursing
+};
+
+MatchFinder.prototype.getScore = function(word) {
+  var letter, wordScore = 0, dw = false, tw = false;
+  for(var i=0; i<word.length; ++i) {
+    letter = word.charAt(i);
+    if (letter === 'q' && this.qType === 'Qu') {
+      letter = word.substring(0, 2);
+      ++i;
+    }
+    // switch(this.specialTiles[letter]) {
+    //   case 'dl':
+    //     wordScore += (this.tileWeights[letter] * 2);
+    //     break;
+    //   case 'tl':
+    //     wordScore += (this.tileWeights[letter] * 3);
+    //     break;
+    //   case 'dw':
+    //     dw = true;
+    //   case 'tw':
+    //     tw = true;
+    //   default:
+        wordScore += parseInt(this.tileWeights[letter]);
+    // }
+  }
+  if (dw) {
+    wordScore *= 2;
+  }
+  if (tw) {
+    wordScore *= 3;
+  }
+  return wordScore;
 };

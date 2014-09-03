@@ -1,9 +1,9 @@
 ALPHABET_Q = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
-     'h', 'i', 'j', 'k', 'l', 'm', 'n',
+     'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
      'p', 'q', 'r', 's', 't', 'u', 'v',
      'w', 'x', 'y', 'z'];
 ALPHABET_QU = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
-     'h', 'i', 'j', 'k', 'l', 'm', 'n',
+     'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
      'p', 'qu', 'r', 's', 't', 'u', 'v',
      'w', 'x', 'y', 'z'];
 $(function(){
@@ -54,16 +54,17 @@ function setModalDisplay(options) {
 }
 
 function setupBoard(options) {
-  MIN_WORD_LEN = options.minWordLength;
+  MIN_WORD_LEN = options.minWordLen;
   NUM_TILES = options.boardSize;
   Q_TYPE = options.qType;
   TILE_WEIGHTS = options.tileWeights;
+  // SPECIAL_TILES = options.specialTiles;
   $('.results ol').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
   enforceInputRules(Q_TYPE, NUM_TILES);
   setModalDisplay(options);
-  getMatches(MIN_WORD_LEN, NUM_TILES);
+  getMatches(MIN_WORD_LEN, NUM_TILES, TILE_WEIGHTS, Q_TYPE/*, SPECIAL_TILES*/);
 }
 
 function setGameOptions() {
@@ -79,11 +80,13 @@ function setGameOptions() {
         tileWeights[ALPHABET_QU[index]] = $(elt).val();
       }
     });
+  // $('.specialTile')
   var jsonObj = { "minWordLen" : minWordLength,
                   "maxWordLen" : (qType === 'Q' ? numTiles : numTiles + 1),
                   "boardSize" : numTiles,
                   "qType" : qType,
-                  "tileWeights" : tileWeights};
+                  "tileWeights" : tileWeights/*,
+                  "specialTiles" : specialTiles*/ };
   localStorage.setItem('gameOptions', JSON.stringify(jsonObj));
   setupBoard(jsonObj);
 }
@@ -165,11 +168,11 @@ function drawGrid(numTiles, qType) {
     gridContainer.append(rowCopy);
   }
 }
-
-function getMatches(minWordLength, numTiles) {
+/*, specialTiles*/
+function getMatches(minWordLength, numTiles, tileWeights, qType) {
   $('.gridButtons .btn-success').click(function() {
     var tiles = $('.tile input[type="text"]');
-    var gridVals = {};
+    var gridVals = [];
     tiles.each(function() {
       gridVals.push($(this).val());
     });
@@ -182,7 +185,7 @@ function getMatches(minWordLength, numTiles) {
               gridSize: numTiles},
       dataType: "html",
       success: function(response) {
-        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength);
+        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength, tileWeights, qType/*, specialTiles*/);
       },
       fail: function (jqXHR, textStatus) {
         alert( "Request failed: " + textStatus );
@@ -192,18 +195,18 @@ function getMatches(minWordLength, numTiles) {
 }
 
 // Build the trie using the filtered matches
-function buildTrie(words) {
+function buildTrie(words, tileWeights) {
   var trie = new Trie();
   for(var i=0; i<words.length; ++i) {
     trie.insert(words[i]);
   }
   return trie;
 }
-
+/*, specialTiles*/
 // Use a trie to find all the paths in the grid that match the dictionary
-function lookupMatches(words, gridVals, minWordLength) {
-  var trie = buildTrie(words);
-  var finder = new MatchFinder(trie, gridVals, minWordLength);
+function lookupMatches(words, gridVals, minWordLength, tileWeights, qType) {
+  var trie = buildTrie(words, tileWeights);
+  var finder = new MatchFinder(trie, gridVals, minWordLength, tileWeights, qType/*, specialTiles*/);
   finder.defineNeighbors();
   finder.searchTiles();
   this.showMatches(finder.matches);
@@ -219,23 +222,34 @@ function showMatches(matches) {
     $('.numResults').html(matches.length + " results found:");
   }
   matches.sort(function(a, b){
-    return b.length - a.length; // ASC -> a - b; DESC -> b - a
+    var scorediff = b.score - a.score;
+    if (scorediff !== 0) {
+      return scorediff;
+    } 
+    var wordLenComp = b.word.length - a.word.length;
+    if (wordLenComp !== 0) {
+      return wordLenComp;
+    } else {
+      return ((a.word < b.word) ? -1 : (a.word > b.word) ? 1 : 0);
+    }
   });
   var uniqueMatches = [];
-  $.each(matches, function(index, match){
-    if($.inArray(match, uniqueMatches) === -1) uniqueMatches.push(match);
+  $.each(matches, function(index, obj){
+    if($.inArray(obj, uniqueMatches) === -1) {
+      uniqueMatches.push(obj);
+    }
   });
-  var matchContainer = $('.results ol');
+  var matchContainer = $('.results ul');
   matchContainer.empty();
   var matchTemplate = $('.result.template');
   var match;
   //take the matches and render them in a space below the page
-  for(var i=0; i<uniqueMatches.length; ++i) {
+  $.each(uniqueMatches, function(index, obj) {
     match = matchTemplate.clone();
     match.removeClass('template');
-    match.html(uniqueMatches[i]);
+    match.html(obj.word + " - " + obj.score);
     matchContainer.append(match);
-  }
+  });
 }
 
 
