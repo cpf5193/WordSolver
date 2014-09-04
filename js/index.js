@@ -25,6 +25,13 @@ function clearBoard() {
   $('.tile').not($('.template')).find('input').val("");
   $('.results ul').empty();
   $('.numResults').empty();
+  $('.specialTile').not('.template').each(function() {
+    if ($(this).data('special') !== 'blank' && $(this).data('special') !== undefined) {
+      $(this).empty();
+      $(this).data('special', 'blank');
+      $(this).removeClass('dl tl dw tw');
+    }
+  });
 }
 
 function setModalDisplay(options) {
@@ -144,7 +151,7 @@ function handleSpecialTileEvents() {
   var choices = ['blank', 'dl', 'tl', 'dw', 'tw'];
   var prevChoice, choice;
   $('.specialTile').click(function() {
-    prevChoice = $(this).data('special');
+    prevChoice = $(this).data('special') ? $(this).data('special') : 'blank';
     choice = choices[(choices.indexOf(prevChoice) + 1) % choices.length];
     $(this).removeClass(prevChoice);
     $(this).addClass(choice);
