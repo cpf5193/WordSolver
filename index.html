@@ -7,10 +7,13 @@
   </head>
   <body>
     <div class="template tile"></div>
+    <div class="template specialTile" data-special="blank"></div>
     <div class="template gridRow"></div>
     <div class="mainSection">
       <h1>Enter the grid letters:</h1>
-      <div class="grid"></div>
+      <div class="grids">
+        <div class="grid"></div>
+        <div class="specialGrid"></div>
       <div class="gridButtons
       ">
         <button class="btn btn-primary" data-toggle="modal" data-target="#gridOptions">
@@ -78,7 +81,8 @@
                   <option>10</option>
                 </select> 
               </label>
-              <div class="tileWeightContainer"></div>
+            </label>
+            <div class="tileWeightContainer"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

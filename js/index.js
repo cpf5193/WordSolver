@@ -62,7 +62,9 @@ function setupBoard(options) {
   $('.results ul').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
+  drawSpecialGrid(NUM_TILES);
   enforceInputRules(Q_TYPE, NUM_TILES);
+  handleSpecialTileEvents();
   setModalDisplay(options);
   getMatches(MIN_WORD_LEN, NUM_TILES, TILE_WEIGHTS, Q_TYPE/*, SPECIAL_TILES*/);
 }
@@ -138,6 +140,23 @@ function enforceInputRules(qType, numTiles) {
   });
 }
 
+function handleSpecialTileEvents() {
+  var choices = ['blank', 'dl', 'tl', 'dw', 'tw'];
+  var prevChoice, choice;
+  $('.specialTile').click(function() {
+    prevChoice = $(this).data('special');
+    choice = choices[(choices.indexOf(prevChoice) + 1) % choices.length];
+    $(this).removeClass(prevChoice);
+    $(this).addClass(choice);
+    $(this).data('special', choice);
+    if (choice === 'blank') {
+      $(this).html('');
+    } else {
+      $(this).html('<p>' + choice.toUpperCase() + '</p>');
+    }
+  });
+}
+
 function moveFocusToNextTile(current) {
   var nextIndex = parseInt(current.parentNode.classList[1].substring(4)) + 1;
   $('.tile' + nextIndex + " input").focus();
@@ -168,6 +187,28 @@ function drawGrid(numTiles, qType) {
     gridContainer.append(rowCopy);
   }
 }
+
+function drawSpecialGrid(numTiles) {
+  var specialGridContainer = $('.specialGrid');
+  specialGridContainer.empty();
+  var rowTemplate = $('.gridRow.template');
+  var tileTemplate = $('.specialTile.template');
+  var tileContainer, rowCopy, tileCopy;
+  for(var i=1; i<= Math.sqrt(numTiles); ++i) {
+    rowCopy = rowTemplate.clone();
+    rowCopy.removeClass('template');
+    rowCopy.addClass('specialGridRow' + i);
+    for(var j=1; j<= Math.sqrt(numTiles); ++j) {
+      tileCopy = tileTemplate.clone();
+      tileCopy.removeClass('template');
+      tileCopy.addClass('specialTile' + ((i-1) * Math.sqrt(numTiles) + j));
+      tileCopy.html()
+      rowCopy.append(tileCopy);
+    }
+    specialGridContainer.append(rowCopy);
+  }
+}
+
 /*, specialTiles*/
 function getMatches(minWordLength, numTiles, tileWeights, qType) {
   $('.gridButtons .btn-success').click(function() {
