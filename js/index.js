@@ -220,9 +220,17 @@ function drawSpecialGrid(numTiles) {
 function getMatches(minWordLength, numTiles, tileWeights, qType) {
   $('.gridButtons .btn-success').click(function() {
     var tiles = $('.tile input[type="text"]');
-    var gridVals = [];
+    var specialTiles = $('.specialTile').not('.template');
+    var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
     tiles.each(function() {
       gridVals.push($(this).val());
+    });
+    specialTiles.each(function(index) {
+      specialVal = $(this).data('special');
+      if (specialVal !== 'blank' && specialVal !== undefined) {
+        correspondingLetter = gridVals[index];
+        specialVals[correspondingLetter] = specialVal;
+      }
     });
 
     var request = $.ajax({
@@ -233,7 +241,7 @@ function getMatches(minWordLength, numTiles, tileWeights, qType) {
               gridSize: numTiles},
       dataType: "html",
       success: function(response) {
-        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength, tileWeights, qType/*, specialTiles*/);
+        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength, tileWeights, qType, specialVals);
       },
       fail: function (jqXHR, textStatus) {
         alert( "Request failed: " + textStatus );
@@ -250,11 +258,11 @@ function buildTrie(words, tileWeights) {
   }
   return trie;
 }
-/*, specialTiles*/
+
 // Use a trie to find all the paths in the grid that match the dictionary
-function lookupMatches(words, gridVals, minWordLength, tileWeights, qType) {
+function lookupMatches(words, gridVals, minWordLength, tileWeights, qType, specialVals) {
   var trie = buildTrie(words, tileWeights);
-  var finder = new MatchFinder(trie, gridVals, minWordLength, tileWeights, qType/*, specialTiles*/);
+  var finder = new MatchFinder(trie, gridVals, minWordLength, tileWeights, qType, specialVals);
   finder.defineNeighbors();
   finder.searchTiles();
   this.showMatches(finder.matches);

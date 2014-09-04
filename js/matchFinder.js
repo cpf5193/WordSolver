@@ -132,20 +132,24 @@ MatchFinder.prototype.getScore = function(word) {
       letter = word.substring(i, i + 2);
       ++i;
     }
-    // switch(this.specialTiles[letter]) {
-    //   case 'dl':
-    //     wordScore += (this.tileWeights[letter] * 2);
-    //     break;
-    //   case 'tl':
-    //     wordScore += (this.tileWeights[letter] * 3);
-    //     break;
-    //   case 'dw':
-    //     dw = true;
-    //   case 'tw':
-    //     tw = true;
-    //   default:
+    switch(this.specialTiles[letter]) {
+      case 'dl':
+        wordScore += (this.tileWeights[letter] * 2);
+        break;
+      case 'tl':
+        wordScore += (this.tileWeights[letter] * 3);
+        break;
+      case 'dw':
+        dw = true;
         wordScore += parseInt(this.tileWeights[letter]);
-    // }
+        break; 
+      case 'tw':
+        tw = true;
+        wordScore += parseInt(this.tileWeights[letter]);
+        break;
+      default:
+        wordScore += parseInt(this.tileWeights[letter]);
+    }
   }
   if (dw) {
     wordScore *= 2;
