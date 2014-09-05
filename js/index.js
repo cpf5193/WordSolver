@@ -228,8 +228,7 @@ function getMatches(minWordLength, numTiles, tileWeights, qType) {
     specialTiles.each(function(index) {
       specialVal = $(this).data('special');
       if (specialVal !== 'blank' && specialVal !== undefined) {
-        correspondingLetter = gridVals[index];
-        specialVals[correspondingLetter] = specialVal;
+        specialVals[index] = specialVal;
       }
     });
 
@@ -300,13 +299,8 @@ function showMatches(matches) {
     var scorediff = b.score - a.score;
     if (scorediff !== 0) {
       return scorediff;
-    } 
-    var wordLenComp = b.word.length - a.word.length;
-    if (wordLenComp !== 0) {
-      return wordLenComp;
-    } else {
-      return ((a.word < b.word) ? -1 : (a.word > b.word) ? 1 : 0);
     }
+    return ((a.word < b.word) ? -1 : (a.word > b.word) ? 1 : 0);
   });
  
   // display the matches

@@ -101,7 +101,7 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
     // This prefix is present in the trie
     if (prefix.length >= this.minWordSize  && this.trie.isWordInTrie(prefix)) {
     // This match is a full word
-      this.matches.push({'word' : prefix, 'score' : this.getScore(prefix)});
+      this.matches.push({'word' : prefix, 'score' : this.getScore(usedTiles)});
     }
 
     // Search with each of the tile's neighbors
@@ -124,38 +124,54 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   // else the prefix does not exist in the trie, stop recursing
 };
 
-MatchFinder.prototype.getScore = function(word) {
-  var letter, wordScore = 0, dw = false, tw = false;
-  for(var i=0; i<word.length; ++i) {
-    letter = word.charAt(i);
-    if (letter === 'q' && this.qType === 'Qu') {
-      letter = word.substring(i, i + 2);
-      ++i;
-    }
-    switch(this.specialTiles[letter]) {
+/*
+  tiles: array of tile indices that make up the word
+*/
+MatchFinder.prototype.getScore = function(tileIndices) {
+  var letter, wordScore = 0, dw = false, tw = false, that = this;
+
+  $.each(tileIndices, function(arrayIndex, tileIndex) {
+    letter = that.gridVals[tileIndex - 1];
+    switch(that.specialTiles[tileIndex - 1]) {
       case 'dl':
-        wordScore += (this.tileWeights[letter] * 2);
+        wordScore += (that.tileWeights[letter] * 2);
         break;
       case 'tl':
-        wordScore += (this.tileWeights[letter] * 3);
+        wordScore += (that.tileWeights[letter] * 3);
         break;
       case 'dw':
         dw = true;
-        wordScore += parseInt(this.tileWeights[letter]);
+        wordScore += parseInt(that.tileWeights[letter]);
         break; 
       case 'tw':
         tw = true;
-        wordScore += parseInt(this.tileWeights[letter]);
+        wordScore += parseInt(that.tileWeights[letter]);
         break;
       default:
-        wordScore += parseInt(this.tileWeights[letter]);
+        wordScore += parseInt(that.tileWeights[letter]);
     }
+  });
+  if (tileIndices.length === 2) {
+    wordScore = 1;
   }
   if (dw) {
     wordScore *= 2;
   }
   if (tw) {
     wordScore *= 3;
+  }
+  if (tileIndices.length  === 5) {
+    wordScore += 3;
+  } else if (tileIndices.length === 6) {
+    wordScore += 6;
+  } else if (tileIndices.length === 7) {
+    wordScore += 10;
+  } else if (tileIndices.length === 8) {
+    wordScore += 15;
+  } else if (tileIndices.length === 9) {
+    wordScore += 20;
+  } else if (tileIndices.length >= 10) {
+    wordScore += 25;
   }
   return wordScore;
 };
