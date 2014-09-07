@@ -63,7 +63,6 @@ h2 {
   width: 150px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 15px;
 }
 h1 {
   font-size: 28px;
@@ -73,12 +72,14 @@ h1 {
 .mainSection {
   text-align: center;
 }
-.gridButtons{
+.gridButtons, .submit-btn-wrapper {
   display: inline-block;
 }
+.gridButtons {
+  margin-top: 35px;
+  }a
 .results {
   color: #fff;
-  margin-top: 20px;
 }
 .result {
   font-size: 18px;

@@ -71,6 +71,16 @@ function setupBoard(options) {
   drawGrid(NUM_TILES, Q_TYPE);
   drawSpecialGrid(NUM_TILES);
   enforceInputRules(Q_TYPE, NUM_TILES);
+  $('.tile input[type="text"]').keyup(function() {
+    if (allTilesFilled()) {
+      $('.gridButtons .btn-success').attr('disabled', null)
+      $('.submit-btn-wrapper').tooltip('destroy');
+    } else {
+      $('.gridButtons .btn-success').attr('disabled', 'disabled');
+      $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
+    }
+  });
+  $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
   handleSpecialTileEvents();
   setModalDisplay(options);
   getMatches(MIN_WORD_LEN, NUM_TILES, TILE_WEIGHTS, Q_TYPE/*, SPECIAL_TILES*/);
@@ -246,7 +256,17 @@ function getMatches(minWordLength, numTiles, tileWeights, qType) {
         alert( "Request failed: " + textStatus );
       }
     });
-  })
+  });
+}
+
+function allTilesFilled() {
+  var tiles = $('.tile input[type="text"]');
+  for(var i=tiles.length-1; i >= 0; --i) {
+    if ($(tiles[i]).val().length === 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Build the trie using the filtered matches
