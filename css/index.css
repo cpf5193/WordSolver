@@ -4,6 +4,7 @@ body {
   padding: 8px;
   background-color: #313174;
   font-family: sans-serif;
+  color: #fff;
 }
 h2 {
   font-size: 20px;
@@ -51,23 +52,38 @@ h2 {
   margin-left: auto;
   margin-right: auto;
   margin-top: 10px;
+  color: #000;
 }
 .modal-title {
   font-size: 24px;
   text-align: center;
 }
+.modal-body {
+  text-align: left;
+}
+.modal-body select {
+  margin-bottom: 2px;
+  margin-top: 5px;
+  margin-right: 8px;
+}
 .modal-body label {
   display: block;
+  margin-bottom: 2px;
+}
+.modal-body > label:nth-child(4) {
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 .gridButtons button.btn {
   width: 150px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 2px;
+  margin-right: 2px;
 }
 h1 {
   font-size: 28px;
   font-weight: bold;
   color: #fff;
+  margin-top: 10px;
 }
 .mainSection {
   text-align: center;
@@ -114,4 +130,8 @@ label.tileWeightBox, .tileWeightContainer {
 }
 .tw {
   background-color: #D8821F;
+}
+.grids label {
+  font-size: 20px;
+  margin-bottom: 10px;
 }

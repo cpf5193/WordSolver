@@ -32,6 +32,8 @@ function clearBoard() {
       $(this).removeClass('dl tl dw tw');
     }
   });
+  $('.gridButtons .btn-success').attr('disabled', 'disabled');
+  $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
 }
 
 function setModalDisplay(options) {
@@ -46,7 +48,6 @@ function setModalDisplay(options) {
   }
   var template = $('.template.tileWeightBox');
   var container = $('.tileWeightContainer');
-  container.empty();
   var alphabet = options.qType === 'Q' ? ALPHABET_Q : ALPHABET_QU;
   var copy, letter;
   for(var i=0; i<alphabet.length; ++i) {
@@ -186,7 +187,7 @@ function isLegalKey(key) {
 function drawGrid(numTiles, qType) {
   // Render the rows
   var gridContainer = $('.grid');
-  gridContainer.empty();
+  gridContainer.html('<label>Letters</label>');
   var rowTemplate = $('.gridRow.template');
   var tileTemplate = $('.tile.template');
   var tileContainer, rowCopy, tileCopy;
@@ -207,7 +208,7 @@ function drawGrid(numTiles, qType) {
 
 function drawSpecialGrid(numTiles) {
   var specialGridContainer = $('.specialGrid');
-  specialGridContainer.empty();
+  specialGridContainer.html('<label>Special Weights</label>');
   var rowTemplate = $('.gridRow.template');
   var tileTemplate = $('.specialTile.template');
   var tileContainer, rowCopy, tileCopy;
