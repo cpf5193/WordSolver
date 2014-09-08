@@ -115,7 +115,7 @@ ul {
 h2.numResults {
   margin-bottom: 10px;
 }
-label.tileWeightBox, .tileWeightContainer {
+label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
   display: inline-block;
 }
 .blank {
@@ -149,4 +149,7 @@ label.tileWeightBox, .tileWeightContainer {
   vertical-align: top;
   font-size: 18;
   padding-top: 8px;
+}
+.tileWeightBox p {
+  margin-right: 3px;
 }

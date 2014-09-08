@@ -53,12 +53,19 @@ function setModalDisplay(options) {
   for(var i=0; i<alphabet.length; ++i) {
     letter = alphabet[i];
     copy = template.clone();
-    copy.find('select').before(letter + ": ");
+    copy.find('select').before('<p>' + letter + ': </p>');
     copy.find('option:nth-child(' + options.tileWeights[letter] + ')')
         .attr('selected', 'selected');
     copy.removeClass('template');
     container.append(copy);
   }
+  $('.qType').change(function() {
+    if ($(this).val() === 'Q') {
+      $('.tileWeightBox:nth-child(17) p').html('q: ');
+    } else {
+      $('.tileWeightBox:nth-child(17) p').html('qu: ');
+    }
+  });
 }
 
 function setupBoard(options) {
