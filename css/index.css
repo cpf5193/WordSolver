@@ -137,3 +137,16 @@ label.tileWeightBox, .tileWeightContainer {
   font-size: 20px;
   margin-bottom: 10px;
 }
+.apple-icon, .android-icon {
+  width: 30px;
+  height: 30px;
+}
+.download {
+  text-align: right;
+}
+.download p {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 18;
+  padding-top: 8px;
+}
