@@ -11,6 +11,7 @@ h2 {
 }
 .tile, .specialTile {
   display: inline-block;
+  color: #000;
 }
 .specialTile {
   background-color: #fff;
@@ -93,9 +94,10 @@ h1 {
 }
 .gridButtons {
   margin-top: 35px;
-  }a
+}
 .results {
   color: #fff;
+  margin-top: 20px;
 }
 .result {
   font-size: 18px;

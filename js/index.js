@@ -230,6 +230,7 @@ function drawSpecialGrid(numTiles) {
 /*, specialTiles*/
 function getMatches(minWordLength, numTiles, tileWeights, qType) {
   $('.gridButtons .btn-success').click(function() {
+    $(this).button('loading');
     var tiles = $('.tile input[type="text"]');
     var specialTiles = $('.specialTile').not('.template');
     var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
@@ -335,6 +336,7 @@ function showMatches(matches) {
     match.html(obj.word + " - " + obj.score);
     matchContainer.append(match);
   });
+  $('.gridButtons .btn-success').button('reset');
 }
 
 
