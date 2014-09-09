@@ -73,7 +73,6 @@ function setupBoard(options) {
   NUM_TILES = options.boardSize;
   Q_TYPE = options.qType;
   TILE_WEIGHTS = options.tileWeights;
-  // SPECIAL_TILES = options.specialTiles;
   $('.results ul').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
@@ -83,6 +82,7 @@ function setupBoard(options) {
     if (allTilesFilled()) {
       $('.gridButtons .btn-success').attr('disabled', null)
       $('.submit-btn-wrapper').tooltip('destroy');
+      $('.submit-btn-wrapper button').focus();
     } else {
       $('.gridButtons .btn-success').attr('disabled', 'disabled');
       $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
@@ -140,13 +140,15 @@ function getGameOptions() {
 
 function enforceInputRules(qType, numTiles) {
   var lastTile = $('.tile' + numTiles);
-  var allButLast = $('.tile').not(lastTile).not('.tile.template')
-                             .find('input[type="text"]');
-  allButLast.keyup(function(event) {
+  var allTiles = $('.tile').not('.tile.template')
+                           .find('input[type="text"]');
+  allTiles.keyup(function(event) {
     var content = this.value;
     if (qType === 'Q') {
       if (isLegalKey(content)) {
-        moveFocusToNextTile(this);
+        if ($(this).parent().attr('class') != lastTile.attr('class')) {
+          moveFocusToNextTile(this);
+        }
       } else {
         this.value = '';
       }
@@ -154,7 +156,9 @@ function enforceInputRules(qType, numTiles) {
       if (content === 'q') {
         $(this).attr('maxlength', 2);
       } else if (content === 'qu' || isLegalKey(content)) {
-        moveFocusToNextTile(this);
+        if ($(this).parent().attr('class') != lastTile.attr('class')) {
+          moveFocusToNextTile(this);
+        }
       } else if (content.charAt(0) === 'q' && content.charAt(1) !== 'u') {
         this.value = content.charAt(0);
       } else {
@@ -162,6 +166,9 @@ function enforceInputRules(qType, numTiles) {
         $(this).attr('maxlength', '1');
       }
     }
+  });
+  lastTile.keyup(function(event) {
+
   });
 }
 
@@ -211,6 +218,7 @@ function drawGrid(numTiles, qType) {
     }
     gridContainer.append(rowCopy);
   }
+  $('.tile:not(.template):first input').focus();
 }
 
 function drawSpecialGrid(numTiles) {
