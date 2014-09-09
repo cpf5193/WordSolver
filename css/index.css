@@ -103,6 +103,11 @@ h1 {
   font-size: 18px;
   margin-top: 2px;
   margin-bottom: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.result:hover {
+  cursor: pointer;
 }
 ul {
   -webkit-column-width: 150px; /* Chrome, Safari, Opera */
@@ -152,4 +157,10 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
 }
 .tileWeightBox p {
   margin-right: 3px;
+}
+.result.active {
+  background-color: black;
+}
+.svg {
+  position: absolute;
 }

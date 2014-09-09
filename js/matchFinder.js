@@ -101,7 +101,8 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
     // This prefix is present in the trie
     if (prefix.length >= this.minWordSize  && this.trie.isWordInTrie(prefix)) {
     // This match is a full word
-      this.matches.push({'word' : prefix, 'score' : this.getScore(usedTiles)});
+      this.matches.push({'word' : prefix, 'score' : this.getScore(usedTiles),
+                         'path' : usedTiles.slice(0) });
     }
 
     // Search with each of the tile's neighbors

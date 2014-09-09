@@ -6,6 +6,7 @@ ALPHABET_QU = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
      'p', 'qu', 'r', 's', 't', 'u', 'v',
      'w', 'x', 'y', 'z'];
+TILE_SIZE = 60;
 $(function(){
   getGameOptions();
 
@@ -23,6 +24,7 @@ $(function(){
 
 function clearBoard() {
   $('.tile').not($('.template')).find('input').val("");
+  $('.svg').empty().css('zIndex', -1);
   $('.results ul').empty();
   $('.numResults').empty();
   $('.specialTile').not('.template').each(function() {
@@ -73,6 +75,7 @@ function setupBoard(options) {
   NUM_TILES = options.boardSize;
   Q_TYPE = options.qType;
   TILE_WEIGHTS = options.tileWeights;
+  $('.svg').empty().css('zIndex', -1);
   $('.results ul').empty();
   $('.numResults').empty();
   drawGrid(NUM_TILES, Q_TYPE);
@@ -245,6 +248,8 @@ function drawSpecialGrid(numTiles) {
 /*, specialTiles*/
 function getMatches(minWordLength, numTiles, tileWeights, qType) {
   $('.gridButtons .btn-success').click(function() {
+    $('.svg').empty().css('zIndex', -1);
+
     $(this).button('loading');
     var tiles = $('.tile input[type="text"]');
     var specialTiles = $('.specialTile').not('.template');
@@ -301,11 +306,11 @@ function lookupMatches(words, gridVals, minWordLength, tileWeights, qType, speci
   var finder = new MatchFinder(trie, gridVals, minWordLength, tileWeights, qType, specialVals);
   finder.defineNeighbors();
   finder.searchTiles();
-  this.showMatches(finder.matches);
+  this.showMatches(finder.matches, gridVals.length);
 }
 
 // Render the results in the page
-function showMatches(matches) {
+function showMatches(matches, numTiles) {
   if (matches.length === 0) {
     $('.numResults').html("No matches found");
   } else if (matches.length === 1) {
@@ -319,16 +324,18 @@ function showMatches(matches) {
   $.each(matches, function(index, obj) {
     word = obj.word, score = obj.score;
     if (noDups[word]) {
-      noDups[word] = Math.max(noDups[word], obj.score);
+      noDups[word] = Math.max(noDups[word].score, score);
     } else {
-      noDups[word] = score;
+      noDups[word] = { 'score': score,
+                       'path': obj.path };
     }
   });
 
   // Convert associative array to array of objects
   var uniqueMatches = [];
-  $.each(noDups, function(word, score) {
-    uniqueMatches.push({'word':word, 'score':score});
+  $.each(noDups, function(word, obj) {
+    uniqueMatches.push({ 'word':word, 'score':obj.score,
+                         'path':obj.path });
   })
 
   // Sort the matches
@@ -349,18 +356,65 @@ function showMatches(matches) {
     match = matchTemplate.clone();
     match.removeClass('template');
     match.html(obj.word + " - " + obj.score);
+    match.addClass('word' + (index+1));
     matchContainer.append(match);
+    match.click(function(){
+      $('.result.active').removeClass('active');
+      $(this).addClass('active');
+      $('svg').empty();
+      showSwipePath($(this), obj, numTiles);
+    });
   });
   $('.gridButtons .btn-success').button('reset');
 }
 
+function getTilePositions(tiles) {
+  var positions = {}, coordinate;
+  tiles.each(function(index, val) {
+    coordinate = { 'x': $('.tile' + (index+1)).position().left,
+                   'y': $('.tile' + (index+1)).position().top }
+    coordinate.x += TILE_SIZE / 2;
+    coordinate.y += TILE_SIZE / 2;
+    positions[index] = coordinate;
+  });
+  return positions;
+}
+
+function showSwipePath(match, wordObj, numTiles) {
+  var word = wordObj.word, path = $(wordObj.path);
+  var boardWidth = Math.sqrt(numTiles);
+  var xPos, yPos;
+  var lineData = [];
+  path.each(function(index, tileNum) {
+    xPos = Math.floor((tileNum-1) % boardWidth) * TILE_SIZE + TILE_SIZE/2;
+    yPos = Math.floor((tileNum-1) / boardWidth) * TILE_SIZE + TILE_SIZE/2;
+    lineData.push({'x': xPos, 'y': yPos});
+  });
+
+  var lineFunction = d3.svg.line()
+                       .x(function(d) { return d.x; })
+                       .y(function(d) { return d.y; })
+                       .interpolate('linear');
+  var firstTileOffset = $('.tile:not(.template):first').offset();
+
+  var svgContainer = d3.select("svg")
+                       .attr('width', boardWidth * TILE_SIZE)
+                       .attr('height', boardWidth * TILE_SIZE)
+                       .attr('style', 'position: absolute; top: ' +
+                              firstTileOffset.top + "; left: " +
+                              firstTileOffset.left + ";");
+
+  var lineGraph = svgContainer.append("path")
+                              .attr("d", lineFunction(lineData))
+                              .attr("stroke", "#145CBA")
+                              .attr("stroke-width", 5)
+                              .attr("opacity", 0.5)
+                              .attr("fill", "none");
+  $('.svg').zIndex(1);
+}
 
 //TODO:
 /*
-  Make grid tiles compatible with 'Qu' tile: insert as game rule option
-  disable the findWords button until all of the fields are filled out/
-    show error tooltip on boxes if not filled out on submit
-  Limit input so that it only takes valid tiles
   add header and footer templates
   Add tooltips, instructions
   filter dictionary to match zynga's (separate dictionary)
@@ -368,8 +422,4 @@ function showMatches(matches) {
   Added features:
     user dictionaries
     d3.js paths to show connections between tiles for matches
-    add in tile weights
-    sorting by alphabetical/score
-    loading spinner
-    add 'report mismatches' button
 */
