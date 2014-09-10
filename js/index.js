@@ -255,7 +255,7 @@ function getMatches(minWordLength, numTiles, tileWeights, qType) {
     var specialTiles = $('.specialTile').not('.template');
     var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
     tiles.each(function() {
-      gridVals.push($(this).val());
+      gridVals.push($(this).val().toLowerCase());
     });
     specialTiles.each(function(index) {
       specialVal = $(this).data('special');
@@ -324,7 +324,10 @@ function showMatches(matches, numTiles) {
   $.each(matches, function(index, obj) {
     word = obj.word, score = obj.score;
     if (noDups[word]) {
-      noDups[word] = Math.max(noDups[word].score, score);
+      if (noDups[word].score < score) {
+        noDups[word] = {'score': score,
+                        'path': obj.path };
+      }
     } else {
       noDups[word] = { 'score': score,
                        'path': obj.path };
@@ -410,7 +413,7 @@ function showSwipePath(match, wordObj, numTiles) {
                               .attr("stroke-width", 5)
                               .attr("opacity", 0.5)
                               .attr("fill", "none");
-  $('.svg').zIndex(1);
+  $('.svg').css('zIndex', 1);
 }
 
 //TODO:
