@@ -362,10 +362,16 @@ function showMatches(matches, numTiles) {
     match.addClass('word' + (index+1));
     matchContainer.append(match);
     match.click(function(){
-      $('.result.active').removeClass('active');
-      $(this).addClass('active');
-      $('svg').empty();
-      showSwipePath($(this), obj, numTiles);
+      $('.svg').empty();
+      if ($('.result.active').attr('class') !== $(this).attr('class')) {
+        $('.result.active').removeClass('active');
+        $(this).addClass('active');
+        showSwipePath($(this), obj, numTiles);
+        $('.svg').css('zIndex', 1);
+      } else {
+        $(this).removeClass('active');
+        $('.svg').css('zIndex', -1);
+      }
     });
   });
   $('.gridButtons .btn-success').button('reset');
