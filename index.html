@@ -14,15 +14,17 @@
         <p>Download Scramble With Friends™:</p>
         <a href="http://zynga.tm/e34d"><img src="img/apple-icon.png" class="apple-icon" title="download-apple"></a>
         <a href="http://zynga.tm/b2S9"><img src="img/android-icon.png" class="android-icon" title="download-android"></a>
-      </div>
+      </div> <!--end .download-->
       <h1>Word Scramble Solver</h1>
+      <img src="img/help-icon.png" class="help-icon" data-toggle="tooltip" data-placement="bottom">
       <div class="grids">
         <div class="grid">
-          <label>Letters</labels>
+          <label>Letters</label>
         </div>
         <div class="specialGrid">
           <label>Special Weights</label>
         </div>
+      </div> <!--end .grids-->
       <div class="gridButtons
       ">
         <button class="btn btn-primary" data-toggle="modal" data-target="#gridOptions">
@@ -32,14 +34,14 @@
           <button type="button" class="btn btn-success" data-loading-text="Fetching Matches..." disabled>Find Words</button>
         </div>
         <button type="button" class="btn btn-danger">Clear</button>
-      </div>
+      </div> <!--end .gridButtons-->
       <li class="result template"></li>
       <div class="results">
         <h2 class="numResults"></h2>
         <ul>
         </ul>
-      </div>
-    </div>
+      </div> <!--end .results-->
+    </div> <!--end .mainSection-->
     
 
     <div class="modal fade" id="gridOptions" tabindex="-1" role="dialog" aria-labelledby="gridOptionsLabel" aria-hidden="true">
@@ -48,7 +50,7 @@
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h4 class="modal-title" id="gridOptionsLabel">Game Rules</h4>
-          </div>
+          </div> <!--end .modal-header-->
           <div class="modal-body">
             <label>
               Minimum Word Length:
@@ -94,14 +96,14 @@
               </label>
             </label>
             <div class="tileWeightContainer"></div>
-          </div>
+          </div> <!--end .modal-body-->
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary">Save Changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div> <!--end .modal-footer-->
+        </div> <!--end .modal-content-->
+      </div> <!--end .modal-dialog-->
+    </div> <!--end .modal-->
     <svg class="svg"></svg>
   </body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>

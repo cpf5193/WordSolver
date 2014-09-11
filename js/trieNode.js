@@ -1,21 +1,27 @@
 // Constructor for a TrieNode with value 'value'
+// this.value: the letters contained in this TrieNode, e.g. 'Qu'
+// this.children: the children in the Trie for this TrieNode
+// this.isWord: whether this node holds the last letter of a path containing a word
 function TrieNode(value) {
   this.value = value;
   this.children = {};
   this.isWord = false;
 };
 
-// Insert function for TrieNode
-// Inserts word into this subtree
+// Inserts word 'word' into the trie starting at this TrieNode
+// word: the word to insert into the trie
 TrieNode.prototype.insert = function(word) {
+  // Get the part of the word that should be put into this node
   var firstChar = word.charAt(0);
   var childNode = this.children[firstChar];
+
+  // If this letter is the end of the word
   if (word.length === 1) {
     if (childNode !== undefined) {
-      // The word already exists, mark it as a word
+      // This prefix already exists, just mark the node as a word
       childNode.isWord = true;
     } else {
-      // new word, add it
+      // new word, add it to the trie
       var newChild = new TrieNode(firstChar);
       newChild.isWord = true;
       this.children[firstChar] = newChild;
@@ -33,13 +39,13 @@ TrieNode.prototype.insert = function(word) {
   }
 };
 
-// Lookup method for TrieNode
-// Returns true if word is in this subtree
+// Returns true if prefix is in this subtree
+// prefix: the prefix to look up in the trie
 TrieNode.prototype.lookup = function(prefix) {
   if (prefix.length === 0) {
     return false;
   } else if (prefix.length === 1) {
-    return (prefix.charAt(0) in this.children);
+    return (prefix in this.children);
   } else {
     var letter = prefix.charAt(0);
     if (letter in this.children) {
@@ -49,10 +55,11 @@ TrieNode.prototype.lookup = function(prefix) {
   }
 };
 
-// isWord method for TrieNode
 // Returns true if the given word is an existing complete word
+// prefix: the prefix to check whether it is a complete word in the trie
 TrieNode.prototype.isWordInTrie = function(prefix) {
-  //Make this method similar to lookup, but only return true if the node's 'isWord' is true
+  // This function is similar to lookup, but only returns true if the node's 
+  // 'isWord' property is true
   if (prefix.length === 0) {
     return false;
   } else if (prefix.length === 1) {

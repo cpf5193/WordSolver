@@ -1,9 +1,13 @@
 /* 
   Constructor for a MatchFinder object
-  trie: the trie in which to search for matches
-  gridVals: an array of values representing the grid
-  neighbors: the dictionary representing the neighbor tiles for each tile position
-  matches: the list of matching words
+  trie: the Trie in which to search for matches
+  gridVals: an array of values representing the grid e.g. ['a', 'b', 'c', ...]
+  neighbors: 1-indexed dictionary representing the neighbor tiles for each tile position
+	e.g. {1: [2,5,6], 2:[...], ...}
+  minWordSize: the minimum length of a word as defined by the user
+  tileWeights: a dictionary of weights per letter, e.g. {'a':1, 'b':4, ...}
+  qType: whether the 'q' letter is present in the board as 'q' or 'qu'
+  specialTiles: 0-indexed dictionary of tiles with special weights, e.g. {0: 'dw', ...}
 */
 function MatchFinder(trie, gridVals, minWordSize, tileWeights, qType, specialTiles) {
   this.trie = trie;
@@ -67,12 +71,17 @@ MatchFinder.prototype.setMiddleRowsNeighbors = function(boardWidth) {
 
 // Sets the neighbors of tiles in the last row
 MatchFinder.prototype.setLastRowNeighbors = function(boardWidth) {
+  // Bottom left tile:
   var bottomLeft = (boardWidth-1)*boardWidth+1;
   this.neighbors[bottomLeft] = [bottomLeft-boardWidth, bottomLeft-boardWidth+1,
                                 bottomLeft+1];
+  
+  // Middle tiles:
   for(var i=bottomLeft+1; i<(boardWidth*boardWidth); ++i) {
     this.neighbors[i] = [i-1, i-boardWidth-1, i-boardWidth, i-boardWidth+1, i+1];
   }
+
+  // Bottom right tile:
   var bottomRight = boardWidth*boardWidth;
   this.neighbors[bottomRight] = [bottomRight-1, bottomRight-boardWidth-1,
                                  bottomRight-boardWidth];
@@ -83,7 +92,8 @@ MatchFinder.prototype.searchTiles = function() {
   var prefix = '', letter;
   for(var tileNum = 1; tileNum <= this.gridVals.length; ++tileNum) {
     letter = this.gridVals[tileNum-1];
-    // Because of the preprocessing, the first letter is guaranteed to be in the trie
+    // Because of the preprocessing, the first letter is guaranteed to be in the trie,
+	// start with singleton set of this tileNum
     this.searchForWords(letter, tileNum, [tileNum]);
   }
 };
@@ -91,8 +101,8 @@ MatchFinder.prototype.searchTiles = function() {
 /* 
   Recursive helper to find matches in the trie
   prefix: the prefix searched for so far
-  tileNum: the number of the current tile
-  usedTiles: the numbers of the tiles that have been used so far in the current prefix
+  tileNum: the position of the current tile
+  usedTiles: the 1-indexed positions of the tiles that have been used so far in the current prefix
 */
 MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   // use recursion to build strings to look for in the trie
@@ -112,6 +122,8 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
         return usedTiles.indexOf(elt) < 0;
       }
     );
+
+	// Search each of this node's children recursively
     var nextPrefix, neighborTileNum, newUsedTiles;
     for(var i=1; i<=availableNeighbors.length; ++i) {
       neighborTileNum = availableNeighbors[i-1];
@@ -125,12 +137,13 @@ MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   // else the prefix does not exist in the trie, stop recursing
 };
 
-/*
-  tiles: array of tile indices that make up the word
-*/
+// Returns the score associated with this word
+// tileIndices: an array of values representing the positions of the 
+//   tiles that make up this word
 MatchFinder.prototype.getScore = function(tileIndices) {
   var letter, wordScore = 0, dw = false, tw = false, that = this;
 
+  // Apply special tile weights
   $.each(tileIndices, function(arrayIndex, tileIndex) {
     letter = that.gridVals[tileIndex - 1];
     switch(that.specialTiles[tileIndex - 1]) {
@@ -152,6 +165,8 @@ MatchFinder.prototype.getScore = function(tileIndices) {
         wordScore += parseInt(that.tileWeights[letter]);
     }
   });
+
+  // Apply bonuses based on word length
   if (tileIndices.length === 2) {
     wordScore = 1;
   }

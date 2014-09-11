@@ -80,11 +80,12 @@ h2 {
   margin-left: 2px;
   margin-right: 2px;
 }
-h1 {
+.mainSection h1 {
   font-size: 28px;
   font-weight: bold;
   color: #fff;
   margin-top: 10px;
+  display: inline-block;
 }
 .mainSection {
   text-align: center;
@@ -142,9 +143,12 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
   font-size: 20px;
   margin-bottom: 10px;
 }
-.apple-icon, .android-icon {
+.apple-icon, .android-icon, .help-icon {
   width: 30px;
   height: 30px;
+}
+.help-icon:hover {
+  cursor: pointer;
 }
 .download {
   text-align: right;
@@ -163,4 +167,16 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
 }
 .svg {
   position: absolute;
+}
+.tooltip-inner {
+  max-width: 400px;
+  padding: 15px;
+}
+.tooltip-inner p {
+  text-align: left;
+  text-indent: 2em;
+}
+strong {
+  font-size: 125%;
+  font-weight: bold;
 }
