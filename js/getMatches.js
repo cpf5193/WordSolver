@@ -1,12 +1,6 @@
 // Retrieves the preprocessed words from the back end and
 //   calls the function to get the matches
-// event: the object that represents the triggered event:
-//   event.target: the selected submit button
-//   event.data: {"minWordLen" : ...,
-//                "numTiles" : ...,
-//                "tileWeights" : ...,
-//                "qType" : ...}
-function getMatches(event) {
+function getMatches() {
   $('.svg').empty().attr('class', 'svg hidden').css('zIndex', -1);
   $(this).button('loading');
 
@@ -14,8 +8,9 @@ function getMatches(event) {
   var tiles = $('.tile input[type="text"]');
   var specialTiles = $('.specialTile').not('.template');
   var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
-  var minWordLen = event.data.minWordLen, numTiles = event.data.numTiles;
-  var tileWeights = event.data.tileWeights, qType = event.data.qType;
+  var data = JSON.parse(localStorage.gameOptions);
+  var minWordLen = data.minWordLen, numTiles = data.numTiles;
+  var tileWeights = data.tileWeights, qType = data.qType;
   tiles.each(function() {
     gridVals.push($(this).val().toLowerCase());
   });

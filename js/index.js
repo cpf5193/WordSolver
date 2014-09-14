@@ -47,6 +47,7 @@ function setupBoard(options) {
   $('.svg').empty().attr('class', 'svg hidden').css('zIndex', -1);
   $('.results ul').empty();
   $('.numResults').empty();
+  $('.tileWeightContainer').empty();
 
   // Render the grids
   drawGrid(NUM_TILES, Q_TYPE);
@@ -66,12 +67,7 @@ function setupBoard(options) {
   setModalDisplay(options);
 
   // Compute the results
-  $('.gridButtons .btn-success').click({
-    "minWordLen" : MIN_WORD_LEN,
-    "numTiles" : NUM_TILES,
-    "tileWeights" : TILE_WEIGHTS,
-    "qType" : Q_TYPE
-  }, getMatches);
+  $('.gridButtons .btn-success').click(getMatches);
 }
 
 // Enables the get matches button if grid is filled out,

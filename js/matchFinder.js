@@ -106,9 +106,6 @@ MatchFinder.prototype.searchTiles = function() {
 */
 MatchFinder.prototype.searchForWords = function(prefix, tileNum, usedTiles) {
   // use recursion to build strings to look for in the trie
-  if (prefix === 'disqualifications') {
-    console.log('searching disqualifications');
-  }
   var isMatch = this.trie.lookup(prefix);
   if (isMatch) {
     // This prefix is present in the trie

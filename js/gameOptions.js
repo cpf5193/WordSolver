@@ -25,7 +25,7 @@ function setGameOptions() {
   localStorage.setItem('gameOptions', JSON.stringify(jsonObj));
   
   // Render with new options
-  setupBoard(jsonObj);
+  getGameOptions();
 
   // Close the modal
   $('.modal-footer button.btn-default').click();
