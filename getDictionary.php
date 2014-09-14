@@ -15,8 +15,9 @@ function filterWords() {
   global $filteredWords;
   $filteredWords = array();
   $allowedLetters = splitQu($_POST["letters"]);
-  $minLength = $_POST["minWordLen"];
   $dictionary = getDictionary();
+  $minLength = $_POST["minWordLen"];
+  $maxLength = $_POST["maxLength"];
   $index;
   $valid;
   $trimmed;
@@ -24,7 +25,7 @@ function filterWords() {
   // Filter the words
   foreach ($dictionary as $word) {
     $trimmed = trim($word);
-    if (strlen($trimmed) >= $minLength && $_POST["gridSize"] >= strlen($trimmed)) {
+    if (strlen($trimmed) >= $minLength && $maxLength >= strlen($trimmed)) {
       $valid = TRUE;
       for($i=0; $i<strlen($trimmed); $i++) {
         if (!in_array(substr($trimmed, $i, 1), $allowedLetters)) {

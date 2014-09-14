@@ -26,16 +26,26 @@ function getMatches(event) {
     }
   });
 
+  var maxLength = gridVals.length;
+  if (qType === "Qu") {
+    $.each(gridVals, function(index, elt) {
+      if (elt.length === 2) {
+        maxLength++;
+      }
+    });
+  }
+
   // Use an ajax call to get the filtered words from the dictionary
   var request = $.ajax({
     url: "getDictionary.php",
     type: "POST",
     data: { minWordLen: minWordLen,
             letters: gridVals,
-            gridSize: numTiles},
+            maxLength: maxLength
+          },
     dataType: "html",
     success: function(response) {
-      var matches = lookupMatches(JSON.parse(response), gridVals, minWordLen, tileWeights, qType, specialVals);
+      lookupMatches(JSON.parse(response), gridVals, minWordLen, tileWeights, qType, specialVals);
     },
     fail: function (jqXHR, textStatus) {
       alert( "Request failed: " + textStatus );
