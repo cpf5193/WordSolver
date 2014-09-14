@@ -33,6 +33,10 @@ function clearBoard() {
   // Disable the submit button
   $('.gridButtons .btn-success').attr('disabled', 'disabled');
   $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
+  $('.tile:not(.template):first input').focus();
+  if (isTouchScreen()) {
+    $('.tile:not(.template):first input').click();
+  }
 }
 
 // Main function to render the page
