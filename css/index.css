@@ -202,3 +202,6 @@ strong {
 .repoLink a {
   text-decoration: none;
 }
+.tooltip-inner{
+  margin-bottom: 2px;
+}
