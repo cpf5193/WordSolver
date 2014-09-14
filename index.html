@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width" initial-scale=3>
     <title>Word Scramble Solver</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
@@ -16,7 +17,7 @@
         <a href="http://zynga.tm/b2S9"><img src="img/android-icon.png" class="android-icon" title="download-android"></a>
       </div> <!--end .download-->
       <h1>Word Scramble Solver</h1>
-      <img src="img/help-icon.png" class="help-icon" data-toggle="tooltip" data-placement="bottom">
+      <img src="img/help-icon.png" class="help-icon" data-toggle="popover" data-placement="bottom">
       <div class="grids">
         <div class="grid">
           <label>Letters</label>
@@ -54,7 +55,7 @@
           <div class="modal-body">
             <label>
               Minimum Word Length:
-              <select class="minWordLength">
+              <select class="minWordLen">
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -104,7 +105,8 @@
         </div> <!--end .modal-content-->
       </div> <!--end .modal-dialog-->
     </div> <!--end .modal-->
-    <svg class="svg"></svg>
+    <svg class="svg hidden"></svg>
+    <p class="repolink"><a href="https://github.com/cpf5193/WordSolver">Github Repository</a></p>
   </body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>

@@ -5,9 +5,14 @@ body {
   background-color: #313174;
   font-family: sans-serif;
   color: #fff;
+  font-size: 16px;
 }
-h2 {
-  font-size: 20px;
+h2, .popover-title {
+  font-size: 150%;
+}
+.popover-title {
+  padding: 15px;
+  text-align: center;
 }
 .tile, .specialTile {
   display: inline-block;
@@ -29,9 +34,9 @@ h2 {
   height: 60px;
   width: 60px;
   text-align: center;
-  font-size: 32px;
+  font-size: 200%;
 }
-.template, .template.tileWeightBox {
+.template, .template.tileWeightBox, .hidden {
   display: none;
 }
 .grids {
@@ -45,9 +50,6 @@ h2 {
   display: inline-block;
   vertical-align: middle;
 }
-.specialGrid {
-  margin-left: 15px;
-}
 .modal-dialog {
   width: 400px;
   margin-left: auto;
@@ -56,7 +58,7 @@ h2 {
   color: #000;
 }
 .modal-title {
-  font-size: 24px;
+  font-size: 150%;
   text-align: center;
 }
 .modal-body {
@@ -81,14 +83,18 @@ h2 {
   margin-right: 2px;
 }
 .mainSection h1 {
-  font-size: 28px;
+  font-size: 175%;
   font-weight: bold;
   color: #fff;
   margin-top: 10px;
-  display: inline-block;
+  display: inline;
 }
 .mainSection {
   text-align: center;
+}
+.submit-btn-wrapper {
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 .gridButtons, .submit-btn-wrapper {
   display: inline-block;
@@ -99,9 +105,12 @@ h2 {
 .results {
   color: #fff;
   margin-top: 20px;
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .result {
-  font-size: 18px;
+  font-size: 120%;
   margin-top: 2px;
   margin-bottom: 2px;
   padding-top: 2px;
@@ -140,7 +149,7 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
   background-color: #D8821F;
 }
 .grids label {
-  font-size: 20px;
+  font-size: 125%;
   margin-bottom: 10px;
 }
 .apple-icon, .android-icon, .help-icon {
@@ -152,11 +161,12 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
 }
 .download {
   text-align: right;
+  margin-bottom: 20px;
 }
 .download p {
   display: inline-block;
   vertical-align: top;
-  font-size: 18;
+  font-size: 110%;
   padding-top: 8px;
 }
 .tileWeightBox p {
@@ -168,15 +178,26 @@ label.tileWeightBox, .tileWeightContainer, .tileWeightBox p{
 .svg {
   position: absolute;
 }
-.tooltip-inner {
-  max-width: 400px;
+.popover {
+  color: #000;
+  max-width: 350px;
+}
+.popover-content {
   padding: 15px;
 }
-.tooltip-inner p {
+.popover-content p {
   text-align: left;
   text-indent: 2em;
 }
 strong {
   font-size: 125%;
   font-weight: bold;
+}
+.repoLink {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+.repoLink a {
+  text-decoration: none;
 }

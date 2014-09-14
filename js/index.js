@@ -12,22 +12,16 @@ TILE_SIZE = 60;
 // Onload function
 $(function(){
   // Register help button callback
-  $('.help-icon').hover(showHelpTooltip);
+  showHelpTooltip();
 
   // Retrieve the game options
   getGameOptions();
 
   // Set up handler for changing game rules
-  $('.modal-footer button.btn-primary').click(function () {
-    setGameOptions();
-	// Close the modal
-    $('.modal-footer button.btn-default').click();
-  });
+  $('.modal-footer button.btn-primary').click(setGameOptions);
 
   // Set handler for clearing the board
-  $('.gridButtons .btn-danger').click(function () {
-    clearBoard();
-  });
+  $('.gridButtons .btn-danger').click(clearBoard);
 
   $( window ).resize(replaceSvg);
 });
@@ -36,7 +30,7 @@ $(function(){
 function clearBoard() {
   // Clear content
   $('.tile').not($('.template')).find('input').val("");
-  $('.svg').empty().css('zIndex', -1);
+  $('.svg').attr('class', 'svg hidden').css('zIndex', -1);
   $('.results ul').empty();
   $('.numResults').empty();
   $('.specialTile').not('.template').each(function() {
@@ -56,7 +50,7 @@ function clearBoard() {
 // options: an object holding the options, containing minWordLen, boardSize, qType, and tileWeights 
 function setModalDisplay(options) {
   // Set default selected options
-  $('.minWordLength option:nth-child(' + parseInt(options.minWordLen) +
+  $('.minWordLen option:nth-child(' + parseInt(options.minWordLen) +
     ')').attr('selected', 'selected');
   $('.numTiles option:nth-child(' + (Math.sqrt(parseInt(options.boardSize)) - 1) +
     ')').attr('selected', 'selected');
@@ -82,13 +76,18 @@ function setModalDisplay(options) {
   }
 
   // Set the handler for changing the q tile weight label
-  $('.qType').change(function() {
-    if ($(this).val() === 'Q') {
-      $('.tileWeightBox:nth-child(17) p').html('q: ');
-    } else {
-      $('.tileWeightBox:nth-child(17) p').html('qu: ');
-    }
-  });
+  $('.qType').change(switchModalQ);
+}
+
+// Changes the label of the q tile weight label in the modal
+// event: the object that represents the triggered event:
+//   event.target: the selected dropdown
+function switchModalQ(event) {
+  if ($(event.target).val() === 'Q') {
+    $('.tileWeightBox:nth-child(17) p').html('q: ');
+  } else {
+    $('.tileWeightBox:nth-child(17) p').html('qu: ');
+  }
 }
 
 // Main function to render the page
@@ -100,7 +99,7 @@ function setupBoard(options) {
   TILE_WEIGHTS = options.tileWeights;
 
   // Empty any old content before rendering
-  $('.svg').empty().css('zIndex', -1);
+  $('.svg').empty().attr('class', 'svg hidden').css('zIndex', -1);
   $('.results ul').empty();
   $('.numResults').empty();
 
@@ -112,16 +111,7 @@ function setupBoard(options) {
   enforceInputRules(Q_TYPE, NUM_TILES);
 
   // Set handler for enabling and disabling the submit button
-  $('.tile input[type="text"]').keyup(function() {
-    if (allTilesFilled()) {
-      $('.gridButtons .btn-success').attr('disabled', null)
-      $('.submit-btn-wrapper').tooltip('destroy');
-      $('.submit-btn-wrapper button').focus();
-    } else {
-      $('.gridButtons .btn-success').attr('disabled', 'disabled');
-      $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
-    }
-  });
+  $('.tile input[type="text"]').keyup(toggleGetMatchesBtn);
   $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
 
   // Set handlers on special tile grid
@@ -131,14 +121,32 @@ function setupBoard(options) {
   setModalDisplay(options);
 
   // Compute the results
-  getMatches(MIN_WORD_LEN, NUM_TILES, TILE_WEIGHTS, Q_TYPE);
+  $('.gridButtons .btn-success').click({
+    "minWordLen" : MIN_WORD_LEN,
+    "numTiles" : NUM_TILES,
+    "tileWeights" : TILE_WEIGHTS,
+    "qType" : Q_TYPE
+  }, getMatches);
+}
+
+// Enables the get matches button if grid is filled out,
+// disable if not
+function toggleGetMatchesBtn() {
+  if (allTilesFilled()) {
+    $('.gridButtons .btn-success').attr('disabled', null)
+    $('.submit-btn-wrapper').tooltip('destroy');
+    $('.submit-btn-wrapper button').focus();
+  } else {
+    $('.gridButtons .btn-success').attr('disabled', 'disabled');
+    $('.submit-btn-wrapper').tooltip('show').tooltip('hide');
+  }
 }
 
 // Set the options that will be used to determine the rules of the game
 function setGameOptions() {
   // Get the currently selected options from the modal
   var numTiles = parseInt($('.numTiles').val());
-  var minWordLength = parseInt($('.minWordLength').val());
+  var minWordLen = parseInt($('.minWordLen').val());
   var qType = $('.qType').val();
   var tileWeights = {};
   $('.tileWeightBox').not('.template').find('select')
@@ -151,7 +159,7 @@ function setGameOptions() {
     });
 
   // Create json to store
-  var jsonObj = { "minWordLen" : minWordLength,
+  var jsonObj = { "minWordLen" : minWordLen,
                   "maxWordLen" : (qType === 'Q' ? numTiles : numTiles + 1),
                   "boardSize" : numTiles,
                   "qType" : qType,
@@ -162,6 +170,9 @@ function setGameOptions() {
   
   // Render with new options
   setupBoard(jsonObj);
+
+  // Close the modal
+  $('.modal-footer button.btn-default').click();
 }
 
 // Retrieve the game options from persistent storage or get default options
@@ -223,24 +234,37 @@ function enforceInputRules(qType, numTiles) {
 // Handle events for the special tile weights grid
 function handleSpecialTileEvents() {
   var choices = ['blank', 'dl', 'tl', 'dw', 'tw'];
-  var prevChoice, choice;
-  $('.specialTile').click(function() {
-	// Get the state of the clicked tile before the click
-    prevChoice = $(this).data('special') ? $(this).data('special') : 'blank';
+  $('.specialTile, .specialTile p').click({"choices" : choices}, switchSpecialTile);
+}
 
-    // Get the new state of the tile after the click
-    choice = choices[(choices.indexOf(prevChoice) + 1) % choices.length];
+// Cycles to the next special tile option on a given element
+// event: the object representing the registered event:
+//   event.target: the selected special tile DOM element
+//   event.data: {"choices":['blank', 'dl', ...]}
+function switchSpecialTile(event) {
+  var choices = event.data.choices, prevChoic, tileElt;
+ 
+  // Get the state of the clicked tile before the click
+  if (event.target.tagName === "P") {
+    tileElt = $(event.target).parent();
+    prevChoice = $(event.target).html().toLowerCase();
+  } else {
+    tileElt = $(event.target);
+    prevChoice = tileElt.data('special') ? tileElt.data('special') : 'blank';
+  }
 
-	// Toggle the UI appearance of the tile
-    $(this).removeClass(prevChoice);
-    $(this).addClass(choice);
-    $(this).data('special', choice);
-    if (choice === 'blank') {
-      $(this).html('');
-    } else {
-      $(this).html('<p>' + choice.toUpperCase() + '</p>');
-    }
-  });
+  // Get the new state of the tile after the click
+  var choice = choices[(choices.indexOf(prevChoice) + 1) % choices.length];
+
+  // Toggle the UI appearance of the tile
+  tileElt.removeClass(prevChoice);
+  tileElt.addClass(choice);
+  tileElt.data('special', choice);
+  if (choice === 'blank') {
+    tileElt.html('');
+  } else {
+    tileElt.html('<p>' + choice.toUpperCase() + '</p>');
+  }
 }
 
 // Automatically moves focuses to the next tile
@@ -260,7 +284,6 @@ function isLegalKey(key) {
 function showHelpTooltip() {
   // Set the contents of the tooltip
   var contents = 
-    "<h2>About Word Scramble Solver</h2>" + 
     "<p><strong>Purpose: </strong>Word Scramble solver is a helper" +
     " for word games that require users to find words in a grid of" +
     " letters, such as in the games Boggle™ and Scramble with Friends™." +
@@ -271,7 +294,8 @@ function showHelpTooltip() {
     " button. You can click on the grid on the right to place special tile weights." +
     " Currently, it supports DL, TL, DW, and TW, which stand for Double Letter, " +
     "Triple Letter, Double Word, and Triple Word. Click a tile multiple times to " +
-    "cycle through the options. To clear the board and the results, click on the" +
+    "cycle through the options. If a word can only apply the DW or TW special " + 
+    "tile once each. To clear the board and the results, click on the" +
     " red 'Clear' button. Once you have entered all of the tiles, click the " +
     "'Find Matches' button to get your results. You can click on the result words" +
     " to see the swipe path for that word. To remove the swipe path, simply" +
@@ -279,10 +303,17 @@ function showHelpTooltip() {
     " try out Scramble with Friends™ using the links above.</p>";
 
   // Set the handler for the tooltip
-  $('.help-icon').tooltip({
-    'trigger': 'hover',
+  if (isTouchScreen()) {
+    $('.help-icon').popover({
+      'html' : true,
+      'content' : contents,
+      'title' : 'About Word Scramble Solver'
+    });
+  }
+  $('.help-icon').popover({
     'html' : true,
-    'title': contents
+    'content': contents,
+    'title' : 'About Word Scramble Solver'
   });
 }
 
@@ -291,84 +322,102 @@ function showHelpTooltip() {
 // qType: whether the grid uses 'q' or 'qu' tiles
 function drawGrid(numTiles, qType) {
   var gridContainer = $('.grid');
+  var gridSize = Math.sqrt(numTiles);
+  gridContainer.css('width', gridSize * TILE_SIZE + "px");
   gridContainer.html('<label>Letters</label>');
   var rowTemplate = $('.gridRow.template');
   var tileTemplate = $('.tile.template');
   var tileContainer, rowCopy, tileCopy;
-  for(var i = 1; i <= Math.sqrt(numTiles); ++i) {
+  for(var i = 1; i <= gridSize; ++i) {
     rowCopy = rowTemplate.clone();
     rowCopy.removeClass('template');
     rowCopy.addClass('gridRow' + i);
-    for(var j = 1; j <= Math.sqrt(numTiles); ++j) {
+    for(var j = 1; j <= gridSize; ++j) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
-      tileCopy.addClass('tile' + ((i-1) * Math.sqrt(numTiles) + j));
+      tileCopy.addClass('tile' + ((i-1) * gridSize + j));
       tileCopy.html('<input type="text" size="1" maxlength="1" align="middle"></div>');
       rowCopy.append(tileCopy);
     }
     gridContainer.append(rowCopy);
   }
   $('.tile:not(.template):first input').focus();
+  if (isTouchScreen()) {
+    $('.tile:not(.template):first input').click();
+  }
 }
 
 // Draws the grid for the special weights tiles
 // numTiles: the number of tiles in the grid
 function drawSpecialGrid(numTiles) {
   var specialGridContainer = $('.specialGrid');
+  var gridSize = Math.sqrt(numTiles);
+  specialGridContainer.css('width', gridSize * TILE_SIZE + "px");
   specialGridContainer.html('<label>Special Weights</label>');
   var rowTemplate = $('.gridRow.template');
   var tileTemplate = $('.specialTile.template');
   var tileContainer, rowCopy, tileCopy;
-  for(var i=1; i<= Math.sqrt(numTiles); ++i) {
+  for(var i=1; i<= gridSize; ++i) {
     rowCopy = rowTemplate.clone();
     rowCopy.removeClass('template');
     rowCopy.addClass('specialGridRow' + i);
-    for(var j=1; j<= Math.sqrt(numTiles); ++j) {
+    for(var j=1; j<= gridSize; ++j) {
       tileCopy = tileTemplate.clone();
       tileCopy.removeClass('template');
-      tileCopy.addClass('specialTile' + ((i-1) * Math.sqrt(numTiles) + j));
+      tileCopy.addClass('specialTile' + ((i-1) * gridSize + j));
       rowCopy.append(tileCopy);
     }
     specialGridContainer.append(rowCopy);
   }
 }
 
+// Determines whether this device is a touch device or not
+function isTouchScreen() {
+  return 'ontouchstart' in document.documentElement;
+}
+
 // Retrieves the preprocessed words from the back end and
 //   calls the function to get the matches
-function getMatches(minWordLength, numTiles, tileWeights, qType) {
-  $('.gridButtons .btn-success').click(function() {
-    $('.svg').empty().css('zIndex', -1);
-    $(this).button('loading');
+// event: the object that represents the triggered event:
+//   event.target: the selected submit button
+//   event.data: {"minWordLen" : ...,
+//                "numTiles" : ...,
+//                "tileWeights" : ...,
+//                "qType" : ...}
+function getMatches(event) {
+  $('.svg').empty().attr('class', 'svg hidden').css('zIndex', -1);
+  $(this).button('loading');
 
-    // Get the needed information from the page
-    var tiles = $('.tile input[type="text"]');
-    var specialTiles = $('.specialTile').not('.template');
-    var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
-    tiles.each(function() {
-      gridVals.push($(this).val().toLowerCase());
-    });
-    specialTiles.each(function(index) {
-      specialVal = $(this).data('special');
-      if (specialVal !== 'blank' && specialVal !== undefined) {
-        specialVals[index] = specialVal;
-      }
-    });
+  // Get the needed information from the page
+  var tiles = $('.tile input[type="text"]');
+  var specialTiles = $('.specialTile').not('.template');
+  var gridVals = [], specialVal, specialVals = {}, correspondingLetter;
+  var minWordLen = event.data.minWordLen, numTiles = event.data.numTiles;
+  var tileWeights = event.data.tileWeights, qType = event.data.qType;
+  tiles.each(function() {
+    gridVals.push($(this).val().toLowerCase());
+  });
+  specialTiles.each(function(index) {
+    specialVal = $(this).data('special');
+    if (specialVal !== 'blank' && specialVal !== undefined) {
+      specialVals[index] = specialVal;
+    }
+  });
 
-    // Use an ajax call to get the filtered words from the dictionary
-    var request = $.ajax({
-      url: "getDictionary.php",
-      type: "POST",
-      data: { minWordLen: minWordLength,
-              letters: gridVals,
-              gridSize: numTiles},
-      dataType: "html",
-      success: function(response) {
-        var matches = lookupMatches(JSON.parse(response), gridVals, minWordLength, tileWeights, qType, specialVals);
-      },
-      fail: function (jqXHR, textStatus) {
-        alert( "Request failed: " + textStatus );
-      }
-    });
+  // Use an ajax call to get the filtered words from the dictionary
+  var request = $.ajax({
+    url: "getDictionary.php",
+    type: "POST",
+    data: { minWordLen: minWordLen,
+            letters: gridVals,
+            gridSize: numTiles},
+    dataType: "html",
+    success: function(response) {
+      var matches = lookupMatches(JSON.parse(response), gridVals, minWordLen, tileWeights, qType, specialVals);
+    },
+    fail: function (jqXHR, textStatus) {
+      alert( "Request failed: " + textStatus );
+    }
   });
 }
 
@@ -396,9 +445,9 @@ function buildTrie(words) {
 
 // Uses a trie to find all the paths in the grid that match the dictionary
 // words: an array of words that 
-function lookupMatches(words, gridVals, minWordLength, tileWeights, qType, specialVals) {
+function lookupMatches(words, gridVals, minWordLen, tileWeights, qType, specialVals) {
   var trie = buildTrie(words);
-  var finder = new MatchFinder(trie, gridVals, minWordLength, tileWeights, qType, specialVals);
+  var finder = new MatchFinder(trie, gridVals, minWordLen, tileWeights, qType, specialVals);
   finder.defineNeighbors();
   finder.searchTiles();
   this.showMatches(finder.matches, gridVals.length);
@@ -472,18 +521,19 @@ function toggleSwipePath(event) {
   var elt = $(event.target);
   $('.svg').empty();
 
-  // If this match is already clicked, remove swipe indication
+  // If this match is not already clicked, add swipe indication
   if ($('.result.active').attr('class') !== elt.attr('class')) {
     $('.result.active').removeClass('active');
     elt.addClass('active');
     showSwipePath(event.data.obj, event.data.numTiles);
-    $('.svg').css('zIndex', 1);
-  } else { // Add swipe indication
+    $('.svg').attr('class', 'svg').css('zIndex', 1);
+  } else { // remove swipe indication
     elt.removeClass('active');
-    $('.svg').css('zIndex', -1);
+    $('.svg').attr('class', 'svg hidden').css('zIndex', -1);
   }
 }
 
+// Repositions the svg element on top of the letters grid
 function replaceSvg() {
   var firstTileOffset = $('.tile:not(.template):first').offset();
   d3.select("svg")
@@ -543,5 +593,5 @@ function showSwipePath(wordObj, numTiles) {
                               .attr("stroke-width", 5)
                               .attr("opacity", 0.5)
                               .attr("fill", "none");
-  $('.svg').css('zIndex', 1);
+  $('.svg').attr('class', 'svg').css('zIndex', 1);
 }
