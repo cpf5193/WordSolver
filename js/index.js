@@ -128,16 +128,9 @@ function showHelpPopover() {
 // matches: An array of words that can be found in the grid
 // numTiles: The number of tiles in the grid
 function showMatches(matches, numTiles) {
-  if (matches.length === 0) {
-    $('.numResults').html("No matches found");
-  } else if (matches.length === 1) {
-    $('.numResults').html("1 result found:");
-  } else {
-    $('.numResults').html(matches.length + " results found:");
-  }
-  
   // Get rid of duplicates
   var noDups = {}, word;
+  var noDupsCount = 0;
   $.each(matches, function(index, obj) {
     word = obj.word, score = obj.score;
     if (noDups[word]) {
@@ -146,10 +139,19 @@ function showMatches(matches, numTiles) {
                         'path': obj.path };
       }
     } else {
+      noDupsCount++;
       noDups[word] = { 'score': score,
                        'path': obj.path };
     }
   });
+
+  if (noDupsCount === 0) {
+    $('.numResults').html("No matches found");
+  } else if (noDupsCount === 1) {
+    $('.numResults').html("1 result found:");
+  } else {
+    $('.numResults').html(noDupsCount + " results found:");
+  }
 
   // Convert associative array to array of objects
   var uniqueMatches = [];
