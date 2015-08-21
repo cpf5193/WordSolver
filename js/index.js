@@ -93,8 +93,8 @@ function showHelpPopover() {
   var contents = 
     "<p><strong>Purpose: </strong>Word Scramble solver is a helper" +
     " for word games that require users to find words in a grid of" +
-    " letters, such as in the games Boggle™ and Scramble with Friends™." +
-    " This app is based on Zynga's Scramble with Friends.</p>" +
+    " letters, such as in the games Boggle\u2122 and Scramble with Friends\u2122." +
+    " This app is based on Zynga's Scramble with Friends\u2122.</p>" +
     "<p><strong>How to use: </strong> Enter the letters into the grid on" +
     " the left by typing the letters. The grid will only accept valid letter" +
     " sequences. You can modify the rules of the game using the 'Modify Game Rules'" + 
@@ -107,7 +107,7 @@ function showHelpPopover() {
     "'Find Matches' button to get your results. You can click on the result words" +
     " to see the swipe path for that word. To remove the swipe path, simply" +
     " re-click the selected word. For further understanding of this application," +
-    " try out Scramble with Friends™ using the links above.</p>";
+    " try out Scramble with Friends\u2122 using the links above.</p>";
 
   // Set the handler for the tooltip
   if (isTouchScreen()) {
