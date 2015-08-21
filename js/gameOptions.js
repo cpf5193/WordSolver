@@ -42,6 +42,7 @@ function getGameOptions() {
       type : "GET",
       dataType: "json",
       success : function(response) {
+        localStorage.setItem('gameOptions', response);
         setupBoard(JSON.parse(response));
       },
       fail: function (jqXHR, textStatus) {
